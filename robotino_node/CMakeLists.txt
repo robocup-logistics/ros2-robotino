@@ -8,9 +8,14 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(tf2)
+find_package(tf2_ros)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+
+#set(CMAKE_MODULE_PATH ~/ros2_ws/install/robotino_msgs/share/robotino_msgs/cmake)
 find_package(robotino_msgs REQUIRED)
 
 # uncomment the following section in order to fill in
@@ -19,6 +24,9 @@ find_package(robotino_msgs REQUIRED)
 
 set(CMAKE_MODULE_PATH /opt/robotino/cmake)
 find_package(RobotinoAPI2)
+
+set(CMAKE_MODULE_PATH /opt/rec_rpc/cmake)
+find_package(RecRpc)
 
 include_directories(
   include
@@ -35,16 +43,17 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} ${REC_ROBOTINO_API2_LIBRARY})
 ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs std_msgs robotino_msgs)
 
-# add_executable(robotino_odometry_node
-#   src/robotino_odometry_node
-#   src/ComROS.cpp
-#   src/OdometryROS.cpp
-# )
-# target_link_libraries(robotino_odometry_node ${REC_ROBOTINO_API2_LIBRARY})
-# ament_target_dependencies(robotino_odometry_node rclcpp sensor_msgs geometry_msgs)
+add_executable(robotino_odometry_node
+  src/robotino_odometry_node
+  src/RobotinoOdometryNode.cpp
+  src/ComROS.cpp
+  src/OdometryROS.cpp
+)
+target_link_libraries(robotino_odometry_node ${REC_ROBOTINO_API2_LIBRARY})
+ament_target_dependencies(robotino_odometry_node rclcpp geometry_msgs nav_msgs tf2 tf2_ros robotino_msgs)
 
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS ${PROJECT_NAME} robotino_odometry_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
