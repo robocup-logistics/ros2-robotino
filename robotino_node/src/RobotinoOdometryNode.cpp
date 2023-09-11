@@ -1,37 +1,29 @@
-/*
- * RobotinoNode.cpp
- *
- *  Created on: 09.12.2011
- *      Author: indorewala@servicerobotics.eu
- */
-
 #include "robotino_node/RobotinoOdometryNode.hpp"
 
 RobotinoOdometryNode::RobotinoOdometryNode(const std::string& name)
 	: Node(name)
 {
-	//nh_.param<std::string>("hostname", hostname_, "192.168.5.5" );
-	//nh_.param<std::string>("tf_prefix", tf_prefix, "no_prefix");
-
+	this->declare_parameter("hostname", "172.26.1.1");
+	this->declare_parameter("tf_prefix", "no_prefix");
 
 	initModules();
 }
 
-RobotinoOdometryNode::~RobotinoOdometryNode() = default;
+RobotinoOdometryNode::~RobotinoOdometryNode()
+{
+}
 
 void RobotinoOdometryNode::initModules()
 {
+	auto hostname = this->get_parameter("hostname").as_string();
+	auto tf_prefix = this->get_parameter("tf_prefix").as_string();
+
     com_ = std::make_shared<ComROS>();
 	com_->setName("Odometry");
-	com_->setAddress("192.168.5.90:12080");
+	com_->setAddress(hostname.c_str());
 
 	odometry_ = std::make_shared<OdometryROS>(this);
-
-	// Set the ComIds
 	odometry_->setComId(com_->id());
-
-	// Set frame Id
-    auto tf_prefix = "no_prefix";
 	odometry_->setFrameId(tf_prefix);
 
 	com_->connectToServer(false);

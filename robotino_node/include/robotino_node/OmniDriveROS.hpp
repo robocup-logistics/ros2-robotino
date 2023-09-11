@@ -1,5 +1,5 @@
-#ifndef OMNIDRIVEROS_H_
-#define OMNIDRIVEROS_H_
+#ifndef OMNIDRIVEROS_HPP_
+#define OMNIDRIVEROS_HPP_
 
 #include "rec/robotino/api2/OmniDrive.h"
 
@@ -11,7 +11,9 @@ class OmniDriveROS: public rec::robotino::api2::OmniDrive
 public:
 	OmniDriveROS(rclcpp::Node* node);
 	~OmniDriveROS();
-    void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
+
+	void setMaxMin(double max_linear_vel, double min_linear_vel,
+		double max_angular_vel, double min_angular_vel);
 
 private:
 	rclcpp::Node* node_;
@@ -22,10 +24,7 @@ private:
 	double max_angular_vel_;
 	double min_angular_vel_;
 
-public:
-	void setMaxMin( double max_linear_vel, double min_linear_vel,
-				double max_angular_vel, double min_angular_vel );
-	
+	void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
 };
 
-#endif /* OMNIDRIVEROS_H_ */
+#endif /* OMNIDRIVEROS_HPP_ */

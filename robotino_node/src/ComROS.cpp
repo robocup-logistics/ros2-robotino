@@ -9,12 +9,12 @@ ComROS::~ComROS()
 {
 }
 
-void ComROS::setName( const std::string& name )
+void ComROS::setName(const std::string& name)
 {
 	name_ = name;
 }
 
-void ComROS::errorEvent( const char* errorString )
+void ComROS::errorEvent(const char* errorString)
 {
 	std::ostringstream os;
 	os << name_ << " : " << errorString;

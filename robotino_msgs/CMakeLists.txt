@@ -15,8 +15,15 @@ find_package(builtin_interfaces REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/AnalogReadings.msg"
+  "msg/DigitalReadings.msg"
+  "msg/EncoderReadings.msg"
+  "msg/GripperState.msg"
+  "msg/MotorReadings.msg"
   "msg/PowerReadings.msg"
   "srv/ResetOdometry.srv"
+  "srv/SetEncoderPosition.srv"
+  "srv/SetGripperState.srv"
   DEPENDENCIES std_msgs #Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
 

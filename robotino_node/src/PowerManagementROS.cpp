@@ -19,6 +19,7 @@ void PowerManagementROS::readingsEvent([[maybe_unused]] float battery_voltage, [
 void PowerManagementROS::powerTimerCb()
 {
     auto msg = robotino_msgs::msg::PowerReadings();
+    msg.stamp.stamp = node_->now();
     msg.voltage = this->voltage();
     msg.current = this->current();
     msg.battery_low = this->batteryLow();

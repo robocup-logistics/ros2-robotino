@@ -1,5 +1,5 @@
-#ifndef POWERMANAGEMENTROS_H_
-#define POWERMANAGEMENTROS_H_
+#ifndef POWERMANAGEMENTROS_HPP_
+#define POWERMANAGEMENTROS_HPP_
 
 #include "rec/robotino/api2/PowerManagement.h"
 
@@ -10,14 +10,14 @@ class PowerManagementROS: public rec::robotino::api2::PowerManagement
 {
 public:
 	PowerManagementROS(rclcpp::Node* node);
-	virtual ~PowerManagementROS();
+	~PowerManagementROS();
 
 private:
 	rclcpp::Node* node_;
-	void readingsEvent(float current, float voltage);
-	void powerTimerCb();
-
 	rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<robotino_msgs::msg::PowerReadings>::SharedPtr publisher_;
+
+	void readingsEvent(float current, float voltage);
+	void powerTimerCb();
 };
-#endif /* POWERMANAGEMENTROS_H_ */
+#endif /* POWERMANAGEMENTROS_HPP_ */

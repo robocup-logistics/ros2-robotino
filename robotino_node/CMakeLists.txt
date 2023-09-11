@@ -39,18 +39,44 @@ add_executable(${PROJECT_NAME}
   src/ComROS.cpp
   src/PowerManagementROS.cpp
   src/OmniDriveROS.cpp
+  src/MotorArrayROS.cpp
+  src/BumperROS.cpp
+  src/AnalogInputArrayROS.cpp
+  src/DigitalInputArrayROS.cpp
+  src/DigitalOutputArrayROS.cpp
+  src/DistanceSensorArrayROS.cpp
+  src/ElectricalGripperROS.cpp
+  src/EncoderInputROS.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${REC_ROBOTINO_API2_LIBRARY})
 ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs std_msgs robotino_msgs)
 
 add_executable(robotino_odometry_node
-  src/robotino_odometry_node
+  src/robotino_odometry_node.cpp
   src/RobotinoOdometryNode.cpp
   src/ComROS.cpp
   src/OdometryROS.cpp
 )
 target_link_libraries(robotino_odometry_node ${REC_ROBOTINO_API2_LIBRARY})
 ament_target_dependencies(robotino_odometry_node rclcpp geometry_msgs nav_msgs tf2 tf2_ros robotino_msgs)
+
+add_executable(robotino_laserrangefinder_node
+  src/robotino_laserrangefinder_node.cpp
+  src/ComROS.cpp
+  src/LaserRangeFinderROS.cpp
+  src/RobotinoLaserRangeFinderNode.cpp
+)
+target_link_libraries(robotino_laserrangefinder_node ${REC_ROBOTINO_API2_LIBRARY})
+ament_target_dependencies(robotino_laserrangefinder_node rclcpp sensor_msgs)
+
+add_executable(robotino_camera_node
+  src/robotino_camera_node.cpp
+  src/RobotinoCameraNode.cpp
+  src/ComROS.cpp
+  src/CameraROS.cpp
+)
+target_link_libraries(robotino_camera_node ${REC_ROBOTINO_API2_LIBRARY})
+ament_target_dependencies(robotino_camera_node rclcpp std_msgs sensor_msgs)
 
 install(
   TARGETS ${PROJECT_NAME} robotino_odometry_node
