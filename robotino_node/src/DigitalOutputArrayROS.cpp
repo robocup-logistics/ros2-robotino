@@ -14,12 +14,11 @@ void DigitalOutputArrayROS::setDigitalValuesCallback(const robotino_msgs::msg::D
 {
 	if(msg->values.size() == numDigitalOutputs())
 	{
-		int values[numDigitalOutputs()];
-		unsigned int i;
+		std::vector<int> values = std::vector<int>(numDigitalOutputs());
 
-		for(i = 0; i < numDigitalOutputs(); i++)
-			values[i] = msg->values[i];
+		for(unsigned int i = 0; i < numDigitalOutputs(); i++)
+			values.at(i) = msg->values[i];
 
-		setValues(values, numDigitalOutputs());
+		setValues(values.data(), numDigitalOutputs());
 	}
 }
