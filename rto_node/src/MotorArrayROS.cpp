@@ -2,7 +2,7 @@
 
 MotorArrayROS::MotorArrayROS(rclcpp::Node* node) : node_(node)
 {
-	motor_pub_ = node_->create_publisher<robotino_msgs::msg::MotorReadings>("motor_readings", 10);
+	motor_pub_ = node_->create_publisher<rto_msgs::msg::MotorReadings>("motor_readings", 10);
 }
 
 MotorArrayROS::~MotorArrayROS()
@@ -40,7 +40,7 @@ void MotorArrayROS::positionsChangedEvent(const int* positions, unsigned int siz
 void MotorArrayROS::currentsChangedEvent(const float* currents, unsigned int size)
 {
 	// Build the MotorReadings msg
-	motor_msg_.stamp.stamp = node_->now();
+	motor_msg_.header.stamp = node_->now();
 	motor_msg_.currents.resize(size);
 
 	if(currents != NULL)

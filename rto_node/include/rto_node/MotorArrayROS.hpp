@@ -4,7 +4,7 @@
 #include "rec/robotino/api2/MotorArray.h"
 
 #include "rclcpp/rclcpp.hpp"
-#include "robotino_msgs/msg/motor_readings.hpp"
+#include "rto_msgs/msg/motor_readings.hpp"
 
 class MotorArrayROS : public rec::robotino::api2::MotorArray
 {
@@ -16,8 +16,8 @@ public:
 
 private:
 	rclcpp::Node* node_;
-	rclcpp::Publisher<robotino_msgs::msg::MotorReadings>::SharedPtr motor_pub_;
-	robotino_msgs::msg::MotorReadings motor_msg_;
+	rclcpp::Publisher<rto_msgs::msg::MotorReadings>::SharedPtr motor_pub_;
+	rto_msgs::msg::MotorReadings motor_msg_;
 
 	void velocitiesChangedEvent(const float* velocities, unsigned int size);
 	void positionsChangedEvent(const int* positions, unsigned int size);

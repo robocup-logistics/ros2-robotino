@@ -7,7 +7,7 @@
 OdometryROS::OdometryROS(rclcpp::Node* node) : node_(node)
 {
 	odometry_pub_ = node_->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
-	reset_odometry_server_ = node_->create_service<robotino_msgs::srv::ResetOdometry>("reset_odometry", std::bind(&OdometryROS::resetOdometryCallback, this, std::placeholders::_1, std::placeholders::_2));
+	reset_odometry_server_ = node_->create_service<rto_msgs::srv::ResetOdometry>("reset_odometry", std::bind(&OdometryROS::resetOdometryCallback, this, std::placeholders::_1, std::placeholders::_2));
 	odometry_transform_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*node_);
 }
 
@@ -61,8 +61,8 @@ void OdometryROS::readingsEvent(double x, double y, double phi,
 }
 
 void OdometryROS::resetOdometryCallback(
-	const std::shared_ptr<robotino_msgs::srv::ResetOdometry::Request> req,
-	[[maybe_unused]] std::shared_ptr<robotino_msgs::srv::ResetOdometry::Response> res)
+	const std::shared_ptr<rto_msgs::srv::ResetOdometry::Request> req,
+	[[maybe_unused]] std::shared_ptr<rto_msgs::srv::ResetOdometry::Response> res)
 {
 	set(req->x, req->y, req->phi, true);
 }

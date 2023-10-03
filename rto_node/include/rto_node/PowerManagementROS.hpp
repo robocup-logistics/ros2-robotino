@@ -4,7 +4,7 @@
 #include "rec/robotino/api2/PowerManagement.h"
 
 #include "rclcpp/rclcpp.hpp"
-#include "robotino_msgs/msg/power_readings.hpp"
+#include "rto_msgs/msg/power_readings.hpp"
 
 class PowerManagementROS: public rec::robotino::api2::PowerManagement
 {
@@ -15,7 +15,7 @@ public:
 private:
 	rclcpp::Node* node_;
 	rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<robotino_msgs::msg::PowerReadings>::SharedPtr publisher_;
+    rclcpp::Publisher<rto_msgs::msg::PowerReadings>::SharedPtr publisher_;
 
 	void readingsEvent(float current, float voltage);
 	void powerTimerCb();

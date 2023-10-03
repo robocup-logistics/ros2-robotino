@@ -2,7 +2,7 @@
 
 AnalogInputArrayROS::AnalogInputArrayROS(rclcpp::Node* node) : node_(node)
 {
-    analog_pub_ = node_->create_publisher<robotino_msgs::msg::AnalogReadings>("analog_readings", 10);
+    analog_pub_ = node_->create_publisher<rto_msgs::msg::AnalogReadings>("analog_readings", 10);
 }
 
 AnalogInputArrayROS::~AnalogInputArrayROS()
@@ -12,7 +12,7 @@ AnalogInputArrayROS::~AnalogInputArrayROS()
 void AnalogInputArrayROS::valuesChangedEvent(const float* values, unsigned int size)
 {
 	// Build the AnalogReadings msg
-	analog_msg_.stamp.stamp = node_->now();
+	analog_msg_.header.stamp = node_->now();
 	analog_msg_.values.resize(size);
 
 	if(size > 0)

@@ -2,7 +2,7 @@
 
 DigitalInputArrayROS::DigitalInputArrayROS(rclcpp::Node* node) : node_(node)
 {
-    digital_pub_ = node_->create_publisher<robotino_msgs::msg::DigitalReadings>("digital_readings", 10);
+    digital_pub_ = node_->create_publisher<rto_msgs::msg::DigitalReadings>("digital_readings", 10);
 }
 
 DigitalInputArrayROS::~DigitalInputArrayROS()
@@ -12,7 +12,7 @@ DigitalInputArrayROS::~DigitalInputArrayROS()
 void DigitalInputArrayROS::valuesChangedEvent(const int* values, unsigned int size)
 {
 	// Build the DigitalReadings msg
-	digital_msg_.stamp.stamp = node_->now();
+	digital_msg_.header.stamp = node_->now();
 	digital_msg_.values.resize(size);
 
 	if(size > 0)

@@ -12,7 +12,6 @@ OmniDriveROS::~OmniDriveROS()
 
 void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
-    std::cout << "cmdvelcb" << std::endl;
 	double linear_x = msg->linear.x;
 	double linear_y = msg->linear.y;
 	double angular = msg->angular.z;
