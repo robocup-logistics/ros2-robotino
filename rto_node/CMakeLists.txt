@@ -22,10 +22,10 @@ find_package(rto_msgs REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-set(CMAKE_MODULE_PATH /opt/robotino/cmake)
+#set(CMAKE_MODULE_PATH /opt/robotino/cmake)
 find_package(RobotinoAPI2)
 
-set(CMAKE_MODULE_PATH /opt/rec_rpc/cmake)
+#set(CMAKE_MODULE_PATH /opt/rec_rpc/cmake)
 find_package(RecRpc)
 
 include_directories(
@@ -48,6 +48,9 @@ add_executable(${PROJECT_NAME}
   src/ElectricalGripperROS.cpp
   src/EncoderInputROS.cpp
 )
+
+message(${REC_ROBOTINO_API2_LIBRARY})
+
 target_link_libraries(${PROJECT_NAME} ${REC_ROBOTINO_API2_LIBRARY})
 ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs std_msgs rto_msgs)
 
@@ -81,6 +84,11 @@ ament_target_dependencies(rto_camera_node rclcpp std_msgs sensor_msgs)
 install(
   TARGETS ${PROJECT_NAME} rto_odometry_node rto_camera_node rto_laserrangefinder_node
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
