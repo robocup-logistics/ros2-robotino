@@ -22,10 +22,10 @@ find_package(rto_msgs REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-#set(CMAKE_MODULE_PATH /opt/robotino/cmake)
+set(CMAKE_MODULE_PATH /opt/robotino/cmake)
 find_package(RobotinoAPI2)
 
-#set(CMAKE_MODULE_PATH /opt/rec_rpc/cmake)
+set(CMAKE_MODULE_PATH /opt/rec_rpc/cmake)
 find_package(RecRpc)
 
 include_directories(
