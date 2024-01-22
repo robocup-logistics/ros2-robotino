@@ -81,6 +81,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             executable="joint_state_publisher",
             name="joint_state_publisher",
             namespace=namesapce,
+            remappings=[("robot_description", '/'+launch_configuration['namespace']+"/robot_description"),
+                        ("joint_states", '/'+launch_configuration['namespace']+"/joint_states")],
             condition = IfCondition(launch_jsb),
         )     
     ])
