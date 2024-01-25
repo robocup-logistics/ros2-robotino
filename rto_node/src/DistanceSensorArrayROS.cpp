@@ -4,7 +4,7 @@
 DistanceSensorArrayROS::DistanceSensorArrayROS(rclcpp::Node* node) : node_(node)
 {
 	irpcloud_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud>("IrSensor_pcl", 10);
-	irlasercsan_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud>("IrSensor_scan", 10);
+	irlaserscan_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud>("IrSensor_scan", 10);
 }
 
 DistanceSensorArrayROS::~DistanceSensorArrayROS()
@@ -32,7 +32,7 @@ void DistanceSensorArrayROS::distancesChangedEvent(const float* distances, unsig
 		irpcloud_msg_.points[i].z = 0.05; // 5cm above ground
 	}
 	// Publish the pcl msg
-	distances_pub_->publish(irpcloud_msg_);
+	irpcloud_pub_->publish(irpcloud_msg_);
 
 	// Build the LaserScan msg
 	irlaserscan_msg_.header.stamp = node_->now();
@@ -51,5 +51,5 @@ void DistanceSensorArrayROS::distancesChangedEvent(const float* distances, unsig
 	}
 
 	// Publish the scan msg
-	irlasercsan_pub_->publish(irlaserscan_msg_);
+	irlaserscan_pub_->publish(irlaserscan_msg_);
 }

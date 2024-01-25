@@ -17,7 +17,7 @@ public:
 
 private:
 	rclcpp::Node* node_;
-	rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr ipcloud_pub_;
+	rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr irpcloud_pub_;
 	sensor_msgs::msg::PointCloud irpcloud_msg_;
 
 	rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr irlaserscan_pub_;
