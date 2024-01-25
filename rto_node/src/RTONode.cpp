@@ -11,7 +11,7 @@ RTONode::RTONode(const std::string& name)
     this->declare_parameter("min_angular_vel", 0.07);
     this->declare_parameter("tf_prefix", "");
 
-    joint_states_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("robotino_joint_states", 10);
+    joint_states_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
 
     initModules();
     initMsgs();
