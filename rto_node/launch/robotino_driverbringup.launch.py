@@ -42,6 +42,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     use_sim_time = LaunchConfiguration('use_sim_time')
     launch_jsb = LaunchConfiguration('launch_jsb')
     robot_description = LaunchConfiguration('robot_description')
+    hostname = LaunchConfiguration('hostname')
     
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
@@ -58,7 +59,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             name='robotino_node',
             namespace=namesapce,
             parameters=[{
-                'hostname' : '172.26.108.81:12080',
+                'hostname' : hostname,
                 'tf_prefix' : launch_configuration['namespace']+'/'
             }]
         ), 
@@ -68,7 +69,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             executable='rto_odometry_node',
             name='robotino_odometry_node',
             parameters=[{
-                'hostname' : '172.26.108.81:12080',
+                'hostname' : hostname,
                 'tf_prefix' : launch_configuration['namespace']+'/'
             }]
         ),
@@ -116,6 +117,10 @@ def generate_launch_description():
     declare_robot_description_config_argument = DeclareLaunchArgument(
         'robot_description',default_value=os.path.join(package_dir, "urdf/robots/robotino_description.urdf"),
         description='Full path to mps_config.yaml file to load')
+    
+    declare_namespace_argument = DeclareLaunchArgument(
+        'hostname', default_value='172.26.108.84:12080',
+        description='ip addres of robotino')
 
     # Create the launch description and populate
     ld = LaunchDescription()

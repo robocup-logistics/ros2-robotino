@@ -28,8 +28,6 @@ from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction
 from launch.substitutions import LaunchConfiguration
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import (LogInfo, RegisterEventHandler, TimerAction)
-from launch.event_handlers import  OnProcessStart
 from launch.conditions import IfCondition
 import launch
 from launch.substitutions import LaunchConfiguration, Command
@@ -46,7 +44,14 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
-        launch_configuration[argname] = argval#
+        launch_configuration[argname] = argval
+        
+    tf_prefix = launch_configuration['namespace']+'/'
+    
+    frame_id_baselink = tf_prefix+'base_link'
+    frame_id_irscan = tf_prefix+'irpcl_link'
+    frame_id_irpcl = tf_prefix+'irscan_link'
+    frame_id_imu = tf_prefix+'imu_link'
 
     # launch robotinobase controllers with individual namespaces
     launch_nodes = GroupAction(
@@ -60,7 +65,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             namespace=namesapce,
             parameters=[{
                 'hostname' : hostname,
-                'tf_prefix' : launch_configuration['namespace']+'/'
+                'tf_prefix' : tf_prefix,
             }]
         ), 
         
@@ -72,7 +77,29 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             parameters=[{'robot_description': Command(["xacro ", robot_description]),
                         'use_sim_time': use_sim_time,
                         'publish_frequency': 20.0,
-                        'frame_prefix':launch_configuration['namespace']+'/'}],
+                        'frame_prefix': tf_prefix}],
+        ),
+        
+        # Initialize Static TF publishers
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            output='screen',
+            arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irscan],
+        ),
+        
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            output='screen',
+            arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irpcl],
+        ),
+        
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            output='screen',
+            arguments=['0.0', '0.0', '0.10', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_imu],
         ),
         
         # Initialize joint state broadcaster
