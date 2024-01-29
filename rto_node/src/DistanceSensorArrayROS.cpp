@@ -3,8 +3,8 @@
 
 DistanceSensorArrayROS::DistanceSensorArrayROS(rclcpp::Node* node) : node_(node)
 {
-	irpcloud_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud>("IrSensor_pcl", 10);
-	irlaserscan_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud>("IrSensor_scan", 10);
+	irpcloud_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud>("irsensor_pcl", 10);
+	irlaserscan_pub_ = node_->create_publisher<sensor_msgs::msg::LaserScan>("irsensor_scan", 10);
 }
 
 DistanceSensorArrayROS::~DistanceSensorArrayROS()
@@ -13,8 +13,8 @@ DistanceSensorArrayROS::~DistanceSensorArrayROS()
 
 void DistanceSensorArrayROS::setMsgFrameId(std::string tf_prefix)
 {
-	irpcloud_msg_.header.frame_id = tf_prefix + "/irpcl_link";
-	irlaserscan_msg_.header.frame_id = tf_prefix + "/irscan_link";
+	irpcloud_msg_.header.frame_id = tf_prefix + "irpcl_link";
+	irlaserscan_msg_.header.frame_id = tf_prefix + "irscan_link";
 }
 
 void DistanceSensorArrayROS::distancesChangedEvent(const float* distances, unsigned int size)
@@ -40,11 +40,11 @@ void DistanceSensorArrayROS::distancesChangedEvent(const float* distances, unsig
 	irlaserscan_msg_.angle_max       = 2 * M_PI;
 	irlaserscan_msg_.angle_increment = (M_PI/180)*40;
 	irlaserscan_msg_.scan_time       = 0.1;
-	irlaserscan_msg_.range_min       = 0.02;
-	//irlaserscan_msg_.range_max       = 0.12;
+	irlaserscan_msg_.range_min       = 0.05;
+	irlaserscan_msg_.range_max       = 0.65;
 
 	irlaserscan_msg_.ranges.resize(size);
-	for (uint8_t i = 0; i < 9; ++i) {
+	for (uint8_t i = 0; i < size; ++i) {
 		if (irlaserscan_msg_.ranges[i] < 1) {
 			irlaserscan_msg_.ranges[i] = distances[i] + 0.225f;
 		}

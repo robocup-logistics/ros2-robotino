@@ -17,10 +17,10 @@ OdometryROS::~OdometryROS()
 
 void OdometryROS::setFrameId(const std::string& tf_prefix)
 {
-	odometry_msg_.header.frame_id = (tf_prefix == "no_prefix") ? "odom" : (tf_prefix + "/odom");
-	odometry_msg_.child_frame_id = (tf_prefix == "no_prefix") ? "base_link" : (tf_prefix + "/base_link");
-	odometry_transform_.header.frame_id = (tf_prefix == "no_prefix") ? "odom" : (tf_prefix + "/odom");
-	odometry_transform_.child_frame_id = (tf_prefix == "no_prefix") ? "base_link" : (tf_prefix + "/base_link");
+	odometry_msg_.header.frame_id = (tf_prefix == "") ? "odom" : (tf_prefix + "odom");
+	odometry_msg_.child_frame_id = (tf_prefix == "") ? "base_link" : (tf_prefix + "base_link");
+	odometry_transform_.header.frame_id = (tf_prefix == "") ? "odom" : (tf_prefix + "odom");
+	odometry_transform_.child_frame_id = (tf_prefix == "") ? "base_link" : (tf_prefix + "base_link");
 }
 
 void OdometryROS::readingsEvent(double x, double y, double phi,

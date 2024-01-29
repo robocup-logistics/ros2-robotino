@@ -36,22 +36,19 @@ from launch.substitutions import LaunchConfiguration, Command
 def launch_nodes_withconfig(context, *args, **kwargs):
     
     # Declare launch configuration variables
-    namesapce = LaunchConfiguration('namespace')
+    namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
     launch_jsb = LaunchConfiguration('launch_jsb')
     robot_description = LaunchConfiguration('robot_description')
     hostname = LaunchConfiguration('hostname')
+    launch_teleopnode = LaunchConfiguration('launch_teleopnode')
+    launch_joynode = LaunchConfiguration('launch_joynode')
     
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
         launch_configuration[argname] = argval
         
     tf_prefix = launch_configuration['namespace']+'/'
-    
-    frame_id_baselink = tf_prefix+'base_link'
-    frame_id_irscan = tf_prefix+'irpcl_link'
-    frame_id_irpcl = tf_prefix+'irscan_link'
-    frame_id_imu = tf_prefix+'imu_link'
 
     # launch robotinobase controllers with individual namespaces
     launch_nodes = GroupAction(
@@ -62,44 +59,34 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             package='rto_node',
             executable='rto_node',
             name='robotino_node',
-            namespace=namesapce,
+            namespace=namespace,
             parameters=[{
                 'hostname' : hostname,
                 'tf_prefix' : tf_prefix,
+            }],
+            remappings=[("joint_states", '/'+launch_configuration['namespace']+"/joint_states")],
+        ),
+        
+        Node(
+            package='rto_node',
+            executable='rto_odometry_node',
+            name='robotino_odometry_node',
+            namespace=namespace,
+            parameters=[{
+                'hostname' : hostname,
+                'tf_prefix' : launch_configuration['namespace']+'/'
             }]
-        ), 
+        ),
         
         # Initialize robot state publisher
         Node(
             package="robot_state_publisher",
             executable="robot_state_publisher",
-            namespace=namesapce,
+            namespace=namespace,
             parameters=[{'robot_description': Command(["xacro ", robot_description]),
                         'use_sim_time': use_sim_time,
                         'publish_frequency': 20.0,
                         'frame_prefix': tf_prefix}],
-        ),
-        
-        # Initialize Static TF publishers
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            output='screen',
-            arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irscan],
-        ),
-        
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            output='screen',
-            arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irpcl],
-        ),
-        
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            output='screen',
-            arguments=['0.0', '0.0', '0.10', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_imu],
         ),
         
         # Initialize joint state broadcaster
@@ -107,11 +94,31 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             package="joint_state_publisher",
             executable="joint_state_publisher",
             name="joint_state_publisher",
-            namespace=namesapce,
+            namespace=namespace,
             remappings=[("robot_description", '/'+launch_configuration['namespace']+"/robot_description"),
                         ("joint_states", '/'+launch_configuration['namespace']+"/joint_states")],
             condition = IfCondition(launch_jsb),
-        )     
+        ),    
+        
+         # Joy node to enable joystick teleop 
+        Node(
+            package="joy",
+            executable="joy_node",
+            name="joy_node",
+            output="log",
+            namespace=namespace,
+            condition= IfCondition(launch_joynode)
+        ),
+
+        # Joy teleop node to enable joystick teleop
+        Node(package="rto_node",
+            executable="robotino_teleop.py",
+            name ="robotino_teleop",
+            output ="log",
+            namespace=namespace,
+            condition= IfCondition(launch_teleopnode)
+        ),
+
     ])
     
     return[launch_nodes]
@@ -140,6 +147,17 @@ def generate_launch_description():
     declare_namespace_argument = DeclareLaunchArgument(
         'hostname', default_value='172.26.108.84:12080',
         description='ip addres of robotino')
+    
+    declare_launch_joynode_argument = DeclareLaunchArgument(
+        'launch_joynode',
+        default_value='true', 
+        description= 'Wheather to start joynode based on launch environment')
+     
+    declare_launch_teleopnode_argument = DeclareLaunchArgument(
+        'launch_teleopnode',
+        default_value='true', 
+        description= 'Wheather to start teleop node not based on launch environment')
+      
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -149,6 +167,9 @@ def generate_launch_description():
     ld.add_action(declare_use_sim_time_argument)
     ld.add_action(declare_launch_rviz_argument)
     ld.add_action(declare_robot_description_config_argument)
+    ld.add_action(declare_launch_joynode_argument)
+    ld.add_action(declare_launch_teleopnode_argument)
+    
     
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))

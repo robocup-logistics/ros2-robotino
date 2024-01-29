@@ -23,61 +23,58 @@
 #!/usr/bin/env python
 
 import os
+from ament_index_python.packages import get_package_share_directory
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction
 from launch.substitutions import LaunchConfiguration
-from ament_index_python.packages import get_package_share_directory
-from launch_ros.substitutions import FindPackageShare
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, OpaqueFunction, GroupAction
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch import LaunchDescription
-from launch.substitutions.path_join_substitution import PathJoinSubstitution
+from launch_ros.actions import Node
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, Command
 
 
 def launch_nodes_withconfig(context, *args, **kwargs):
     
     # Declare launch configuration variables
     namespace = LaunchConfiguration('namespace')
-    hostname = LaunchConfiguration('hostname')
-    launch_teleopnode = LaunchConfiguration('launch_teleopnode')
-    launch_joynode = LaunchConfiguration('launch_joynode')
+    use_sim_time = LaunchConfiguration('use_sim_time')
     
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
         launch_configuration[argname] = argval
         
     tf_prefix = launch_configuration['namespace']+'/'
+    
+    frame_id_baselink = tf_prefix+'base_link'
+    frame_id_irscan = tf_prefix+'irpcl_link'
+    frame_id_irpcl = tf_prefix+'irscan_link'
+    frame_id_imu = tf_prefix+'imu_link'
 
     # launch robotinobase controllers with individual namespaces
     launch_nodes = GroupAction(
         actions=[
         
-        # Launch Integrate laserscan launch file 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([
-                PathJoinSubstitution([
-                    FindPackageShare('rto_node'),'launch','robotino_driver.launch.py'
-                ])
-            ]),
-            launch_arguments={
-                'namespace': namespace,
-                'hostname': hostname,
-                'launch_teleopnode': launch_teleopnode,
-                'launch_joynode': launch_joynode,
-            }.items()
+        # Initialize Static TF publishers
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            output='screen',
+            arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irscan],
         ),
         
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([
-                PathJoinSubstitution([
-                    FindPackageShare('rto_node'),'launch','robotino_tfbroadcaster.launch.py'
-                ])
-            ]),
-            launch_arguments={
-                'namespace': namespace,
-                'use_sim_time': 'false',
-            }.items()
-        )
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            output='screen',
+            arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irpcl],
+        ),
+        
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            output='screen',
+            arguments=['0.0', '0.0', '0.10', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_imu],
+        ),
+
     ])
     
     return[launch_nodes]
@@ -88,28 +85,17 @@ def generate_launch_description():
     declare_namespace_argument = DeclareLaunchArgument(
         'namespace', default_value='',
         description='Top-level namespace')
-    
-    declare_namespace_argument = DeclareLaunchArgument(
-        'hostname', default_value='172.26.108.84:12080',
-        description='ip addres of robotino')
-    
-    declare_launch_joynode_argument = DeclareLaunchArgument(
-        'launch_joynode',
-        default_value='true', 
-        description= 'Wheather to start joynode based on launch environment')
-     
-    declare_launch_teleopnode_argument = DeclareLaunchArgument(
-        'launch_teleopnode',
-        default_value='true', 
-        description= 'Wheather to start teleop node not based on launch environment')
 
+    declare_use_sim_time_argument = DeclareLaunchArgument(
+        'use_sim_time', default_value='false',
+        description='Use simulation clock if true')
+  
     # Create the launch description and populate
     ld = LaunchDescription()
 
     # Declare the launch options
     ld.add_action(declare_namespace_argument)
-    ld.add_action(declare_launch_joynode_argument)
-    ld.add_action(declare_launch_teleopnode_argument)
+    ld.add_action(declare_use_sim_time_argument)
     
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))
