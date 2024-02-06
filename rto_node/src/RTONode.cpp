@@ -5,7 +5,7 @@ RTONode::RTONode(const std::string& name)
     : Node(name)
 {
     this->declare_parameter("hostname", "172.26.1.1");
-    this->declare_parameter("max_linear_vel", 0.2);
+    this->declare_parameter("max_linear_vel", 1.0);
     this->declare_parameter("min_linear_vel", 0.02);
     this->declare_parameter("max_angular_vel", 1.0);
     this->declare_parameter("min_angular_vel", 0.07);
@@ -47,7 +47,7 @@ void RTONode::initModules()
     omni_drive_->setComId(com_->id());
     omni_drive_->setMaxMin(max_linear_vel, min_linear_vel, max_angular_vel, min_angular_vel);
 
-    imu_ = std::make_shared<GyroscopROS>(this);
+    imu_ = std::make_shared<GyroscopeROS>(this);
     imu_->setComId(com_->id());
     imu_->setMsgFrameId(tf_prefix);
 

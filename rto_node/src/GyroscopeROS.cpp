@@ -27,7 +27,7 @@
 GyroscopeROS::GyroscopeROS(rclcpp::Node* node) : node_(node)
 {
 	imu_pub_ = node_->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
-    timer_ = node_->create_wall_timer(std::chrono::milliseconds(100), std::bind(&GyroscopeROS::timerCallback, this));
+    //timer_ = node_->create_wall_timer(std::chrono::milliseconds(100), std::bind(&GyroscopeROS::timerCallback, this));
     //timer_ = node_->create_wall_timer(std::chrono::milliseconds(100), [this](){timerCallback();});
 }
 
@@ -55,9 +55,9 @@ void GyroscopeROS::gyroscopeExtEvent(float angle, float rate)
     // Populate the IMU message with your data
     imu_msg_.header.stamp = node_->now();
 
-    roll = 0.0;  // Set your orientation values
-    pitch = 0.0;
-    yaw = angle;
+    float roll = 0.0;  // Set your orientation values
+    float pitch = 0.0;
+    float yaw = angle;
 
     Eigen::Quaterniond resultQuaternion = getQuaternionfromEuler(roll, pitch, yaw);
 

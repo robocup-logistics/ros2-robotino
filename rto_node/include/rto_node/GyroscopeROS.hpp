@@ -22,12 +22,12 @@
 #ifndef GYROSCOPEROS_HPP_
 #define GYROSCOPEROS_HPP_
 
-#include "rec/robotino/api2/Gyroscope.h"
+#include "rec/robotino/api2/GyroscopeExt.h"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include </usr/include/eigen3/Eigen/Geometry>
 
-class GyroscopeROS: public rec::robotino::api2::Gyroscope
+class GyroscopeROS: public rec::robotino::api2::GyroscopeExt
 {
 public:
 	GyroscopeROS(rclcpp::Node* node);
