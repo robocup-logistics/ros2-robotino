@@ -35,8 +35,8 @@ package_name = "robotino_description"
 
 def generate_launch_description():
     pkg_share = get_package_share_directory(package_name)
-    default_model_path = os.path.join(pkg_share, "urdf/robots/robotino3_description.urdf")
-    default_rviz2_path = os.path.join(pkg_share, "rviz/robotino3_description.rviz")
+    default_model_path = os.path.join(pkg_share, "urdf/robots/robotino_description.urdf")
+    default_rviz2_path = os.path.join(pkg_share, "rviz/robotino_description.rviz")
  
     # Initialize robot state publisher 
     robot_state_publisher_node = launch_ros.actions.Node(

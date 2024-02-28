@@ -4,8 +4,8 @@
   <name>robotino_description</name>
   <version>0.0.0</version>
   <description>"robotino description package"</description>
-  <maintainer email="saurabh.borse@alumni.fh-aachen.de">saurabh-borse</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="saurabh.borse@alumni.fh-aachen.de">Saurabh Borse</maintainer>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
