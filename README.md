@@ -21,7 +21,6 @@ Sensor Interfaces:
 Encouraging collaboration and contributions, the repository aims to serve as a reliable resource for researchers, developers, and enthusiasts in the fields of robotics and simulation. Regular updates ensure compatibility with evolving dependencies, making it a sustainable and valuable tool for the robotics community.
 
 ## Table of content 
-- Installation Premise
 - Installation
     - Dependencies
     - Installation from source
@@ -33,13 +32,6 @@ Encouraging collaboration and contributions, the repository aims to serve as a r
 - Research and References
 - Bugs and Issues
 - Way-forward
-
-## Installation Premise
-This repository has been tested on [ROS2 Humble] and with webots 2023b. It is recommended to use the same versions to avoid any issues;
-
-These instructions assume that you have already installed ROS2 Humble on your machine. If not, please follow the recommended recommended ubuntu installation tutorial;
-
-Create a ros2 workspace, Once you have created the workspace, clone this repository in the source folder of your workspace.
 
 ## Installation
     
