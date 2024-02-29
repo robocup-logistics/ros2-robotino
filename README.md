@@ -83,16 +83,18 @@ Then, source the workspace by running the following command:
 ### Launching robotino driver - Bringup
 
 
-    ros2 launch rto_node robotino_driverbringup.launch.py namespace:=robotinobase1
+    ros2 launch rto_node robotino_driverbringup.launch.py namespace:=robotinobase1 hostname:=172.26.108.84:12080
 
 
 - namespace: It's a launch configuration used to spawn the corresponding robotinobase, its controllers, and node parameters
+- hostname: It's the IP address of the robotino base and port no. for the process to run. The default IP address is 172.26.1.1:12080
 
 ### Launching robotino driver - Standalone
 
     ros2 launch rto_node robotino_driver.launch.py namespace:=robotinobase1
 
 - namespace: It's a launch configuration used to spawn the corresponding robotinobase, its controllers, and node parameters
+- hostname: It's the IP address of the robotino base and port no. for the process to run. The default IP address is 172.26.1.1:12080
 
 ## Contributing to this repo
 
