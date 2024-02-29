@@ -35,24 +35,24 @@ from launch.substitutions.path_join_substitution import PathJoinSubstitution
 
 
 def launch_nodes_withconfig(context, *args, **kwargs):
-    
+
     # Declare launch configuration variables
     namespace = LaunchConfiguration('namespace')
     hostname = LaunchConfiguration('hostname')
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
-    
+
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
         launch_configuration[argname] = argval
-        
+
     tf_prefix = launch_configuration['namespace']+'/'
 
     # launch robotinobase controllers with individual namespaces
     launch_nodes = GroupAction(
         actions=[
-        
-        # Launch Integrate laserscan launch file 
+
+        # Launch Integrate laserscan launch file
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
                 PathJoinSubstitution([
@@ -66,7 +66,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
                 'launch_joynode': launch_joynode,
             }.items()
         ),
-        
+
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
                 PathJoinSubstitution([
@@ -79,28 +79,28 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             }.items()
         )
     ])
-    
+
     return[launch_nodes]
 
 def generate_launch_description():
-    
+
     # Declare launch configuration variables
     declare_namespace_argument = DeclareLaunchArgument(
         'namespace', default_value='',
         description='Top-level namespace')
-    
+
     declare_namespace_argument = DeclareLaunchArgument(
-        'hostname', default_value='172.26.108.84:12080',
+        'hostname', default_value='172.26.1.1:12080',
         description='ip addres of robotino')
-    
+
     declare_launch_joynode_argument = DeclareLaunchArgument(
         'launch_joynode',
-        default_value='true', 
+        default_value='true',
         description= 'Wheather to start joynode based on launch environment')
-     
+
     declare_launch_teleopnode_argument = DeclareLaunchArgument(
         'launch_teleopnode',
-        default_value='true', 
+        default_value='true',
         description= 'Wheather to start teleop node not based on launch environment')
 
     # Create the launch description and populate
@@ -110,8 +110,8 @@ def generate_launch_description():
     ld.add_action(declare_namespace_argument)
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
-    
+
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))
-    
+
     return ld

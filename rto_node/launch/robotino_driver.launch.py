@@ -34,7 +34,7 @@ from launch.substitutions import LaunchConfiguration, Command
 
 
 def launch_nodes_withconfig(context, *args, **kwargs):
-    
+
     # Declare launch configuration variables
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -43,17 +43,18 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     hostname = LaunchConfiguration('hostname')
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
-    
+    launch_rsp_freq = LaunchConfiguration('launch_rsp_freq')
+
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
         launch_configuration[argname] = argval
-        
+
     tf_prefix = launch_configuration['namespace']+'/'
 
     # launch robotinobase controllers with individual namespaces
     launch_nodes = GroupAction(
         actions=[
-        
+
         # Launch robotino driver node
         Node(
             package='rto_node',
@@ -66,7 +67,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             }],
             remappings=[("joint_states", '/'+launch_configuration['namespace']+"/joint_states")],
         ),
-        
+
         Node(
             package='rto_node',
             executable='rto_odometry_node',
@@ -77,7 +78,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
                 'tf_prefix' : launch_configuration['namespace']+'/'
             }]
         ),
-        
+
         # Initialize robot state publisher
         Node(
             package="robot_state_publisher",
@@ -85,10 +86,10 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             namespace=namespace,
             parameters=[{'robot_description': Command(["xacro ", robot_description]),
                         'use_sim_time': use_sim_time,
-                        'publish_frequency': 20.0,
+                        'publish_frequency': launch_rsp_freq,
                         'frame_prefix': tf_prefix}],
         ),
-        
+
         # Initialize joint state broadcaster
         Node(
             package="joint_state_publisher",
@@ -98,9 +99,9 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             remappings=[("robot_description", '/'+launch_configuration['namespace']+"/robot_description"),
                         ("joint_states", '/'+launch_configuration['namespace']+"/joint_states")],
             condition = IfCondition(launch_jsb),
-        ),    
-        
-         # Joy node to enable joystick teleop 
+        ),
+
+         # Joy node to enable joystick teleop
         Node(
             package="joy",
             executable="joy_node",
@@ -120,12 +121,12 @@ def launch_nodes_withconfig(context, *args, **kwargs):
         ),
 
     ])
-    
+
     return[launch_nodes]
 
 def generate_launch_description():
-    package_dir = get_package_share_directory('rto_node')
-    
+    pkg_share_description = get_package_share_directory('robotino_description')
+
     # Declare launch configuration variables
     declare_namespace_argument = DeclareLaunchArgument(
         'namespace', default_value='',
@@ -134,30 +135,34 @@ def generate_launch_description():
     declare_use_sim_time_argument = DeclareLaunchArgument(
         'use_sim_time', default_value='false',
         description='Use simulation clock if true')
-    
+
     declare_launch_rviz_argument = DeclareLaunchArgument(
         'launch_jsb',
-        default_value='false', 
-        description= 'Wheather to start Rvizor not based on launch environment')
-    
+        default_value='false',
+        description= 'Weather to start Rvizor not based on launch environment')
+
     declare_robot_description_config_argument = DeclareLaunchArgument(
-        'robot_description',default_value=os.path.join(package_dir, "urdf/robots/robotino_description.urdf"),
+        'robot_description',default_value=os.path.join(pkg_share_description, "urdf/robots/robotino_description.urdf"),
         description='Full path to mps_config.yaml file to load')
-    
+
     declare_namespace_argument = DeclareLaunchArgument(
-        'hostname', default_value='172.26.108.84:12080',
-        description='ip addres of robotino')
-    
+        'hostname', default_value='172.26.1.1:12080',
+        description='ip address of robotino')
+
+    declare_launch_rsp_freq_argument = DeclareLaunchArgument(
+        'launch_rsp_freq', default_value='20.0',
+        description='publish frequency for robot state publisher node')
+
     declare_launch_joynode_argument = DeclareLaunchArgument(
         'launch_joynode',
-        default_value='true', 
-        description= 'Wheather to start joynode based on launch environment')
-     
+        default_value='true',
+        description= 'Weather to start joynode based on launch environment')
+
     declare_launch_teleopnode_argument = DeclareLaunchArgument(
         'launch_teleopnode',
-        default_value='true', 
-        description= 'Wheather to start teleop node not based on launch environment')
-      
+        default_value='true',
+        description= 'Weather to start teleop node not based on launch environment')
+
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -169,9 +174,10 @@ def generate_launch_description():
     ld.add_action(declare_robot_description_config_argument)
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
-    
-    
+    ld.add_action(declare_launch_rsp_freq_argument)
+
+
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))
-    
+
     return ld

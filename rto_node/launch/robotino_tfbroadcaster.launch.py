@@ -33,17 +33,17 @@ from launch.substitutions import LaunchConfiguration, Command
 
 
 def launch_nodes_withconfig(context, *args, **kwargs):
-    
+
     # Declare launch configuration variables
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    
+
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
         launch_configuration[argname] = argval
-        
+
     tf_prefix = launch_configuration['namespace']+'/'
-    
+
     frame_id_baselink = tf_prefix+'base_link'
     frame_id_irscan = tf_prefix+'irpcl_link'
     frame_id_irpcl = tf_prefix+'irscan_link'
@@ -52,7 +52,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     # launch robotinobase controllers with individual namespaces
     launch_nodes = GroupAction(
         actions=[
-        
+
         # Initialize Static TF publishers
         Node(
             package='tf2_ros',
@@ -60,14 +60,14 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             output='screen',
             arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irscan],
         ),
-        
+
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             output='screen',
             arguments=['0.0', '0.0', '0.05', '0.0', '0.0', '0.0', frame_id_baselink,frame_id_irpcl],
         ),
-        
+
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
@@ -76,11 +76,11 @@ def launch_nodes_withconfig(context, *args, **kwargs):
         ),
 
     ])
-    
+
     return[launch_nodes]
 
 def generate_launch_description():
-    
+
     # Declare launch configuration variables
     declare_namespace_argument = DeclareLaunchArgument(
         'namespace', default_value='',
@@ -89,15 +89,15 @@ def generate_launch_description():
     declare_use_sim_time_argument = DeclareLaunchArgument(
         'use_sim_time', default_value='false',
         description='Use simulation clock if true')
-  
+
     # Create the launch description and populate
     ld = LaunchDescription()
 
     # Declare the launch options
     ld.add_action(declare_namespace_argument)
     ld.add_action(declare_use_sim_time_argument)
-    
+
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))
-    
+
     return ld
