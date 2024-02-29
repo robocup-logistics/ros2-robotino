@@ -27,8 +27,6 @@
 GyroscopeROS::GyroscopeROS(rclcpp::Node* node) : node_(node)
 {
 	imu_pub_ = node_->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
-    //timer_ = node_->create_wall_timer(std::chrono::milliseconds(100), std::bind(&GyroscopeROS::timerCallback, this));
-    //timer_ = node_->create_wall_timer(std::chrono::milliseconds(100), [this](){timerCallback();});
 }
 
 GyroscopeROS::~GyroscopeROS()
@@ -50,7 +48,7 @@ Eigen::Quaterniond GyroscopeROS::getQuaternionfromEuler(double roll, double pitc
 }
 
 void GyroscopeROS::gyroscopeExtEvent(float angle, float rate)
-{   
+{
 
     // Populate the IMU message with your data
     imu_msg_.header.stamp = node_->now();
@@ -61,36 +59,20 @@ void GyroscopeROS::gyroscopeExtEvent(float angle, float rate)
 
     Eigen::Quaterniond resultQuaternion = getQuaternionfromEuler(roll, pitch, yaw);
 
-    imu_msg_.orientation.x = resultQuaternion.coeffs()[0];  
+    imu_msg_.orientation.x = resultQuaternion.coeffs()[0];
     imu_msg_.orientation.y = resultQuaternion.coeffs()[1];
     imu_msg_.orientation.z = resultQuaternion.coeffs()[2];
     imu_msg_.orientation.w = resultQuaternion.coeffs()[3];
-    imu_msg_.angular_velocity.x = 0.0;  
+    imu_msg_.angular_velocity.x = 0.0;
     imu_msg_.angular_velocity.y = 0.0;
     imu_msg_.angular_velocity.z = rate;
-    imu_msg_.linear_acceleration.x = 0.0;  
+    imu_msg_.linear_acceleration.x = 0.0;
     imu_msg_.linear_acceleration.y = 0.0;
-    imu_msg_.linear_acceleration.z = 9.81; 
+    imu_msg_.linear_acceleration.z = 9.81;
 
     imu_pub_->publish(std::move(imu_msg_));
 
 }
 
-// void GyroscopeROS::timerCallback()
-// {   
-//     imu_msg_.header.stamp = node_->now();
-//     imu_msg_.orientation.x = resultQuaternion.coeffs()[0];  
-//     imu_msg_.orientation.y = resultQuaternion.coeffs()[1];
-//     imu_msg_.orientation.z = resultQuaternion.coeffs()[2];
-//     imu_msg_.orientation.w = resultQuaternion.coeffs()[3];
-//     imu_msg_.angular_velocity.x = 0.0;  
-//     imu_msg_.angular_velocity.y = 0.0;
-//     imu_msg_.angular_velocity.z = rate();
-//     imu_msg_.linear_acceleration.x = 0.0;  
-//     imu_msg_.linear_acceleration.y = 0.0;
-//     imu_msg_.linear_acceleration.z = 9.81; 
-
-//     imu_pub_->publish(std::move(imu_msg_));
-// }
 
 

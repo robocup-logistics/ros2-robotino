@@ -26,12 +26,6 @@ public:
 	void execute();
 
 private:
-	//std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::JointState>> joint_states_pub_;
-
-	//sensor_msgs::msg::JointState joint_state_msg_;
-	//std::vector<float> motor_velocities_;
-	//std::vector<int> motor_positions_;
-
     std::shared_ptr<ComROS> com_;
 	std::shared_ptr<BumperROS> bumper_;
 	std::shared_ptr<MotorArrayROS> motor_array_;
@@ -46,8 +40,7 @@ private:
 	std::shared_ptr<EncoderInputROS> encoder_input_;
 
 	void initModules();
-	//void initMsgs();
-	//void publishJointStateMsg();
+
 };
 
 #endif /* ROBOTINONODE_HPP_ */

@@ -60,8 +60,6 @@ add_executable(${PROJECT_NAME}
   src/EncoderInputROS.cpp
 )
 
-message(${REC_ROBOTINO_API2_LIBRARY})
-
 target_link_libraries(${PROJECT_NAME} ${REC_ROBOTINO_API2_LIBRARY})
 ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs std_msgs rto_msgs)
 

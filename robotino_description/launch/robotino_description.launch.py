@@ -37,8 +37,8 @@ def generate_launch_description():
     pkg_share = get_package_share_directory(package_name)
     default_model_path = os.path.join(pkg_share, "urdf/robots/robotino_description.urdf")
     default_rviz2_path = os.path.join(pkg_share, "rviz/robotino_description.rviz")
- 
-    # Initialize robot state publisher 
+
+    # Initialize robot state publisher
     robot_state_publisher_node = launch_ros.actions.Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -52,7 +52,7 @@ def generate_launch_description():
         name="joint_state_publisher",
         condition=launch.conditions.UnlessCondition(LaunchConfiguration("gui")),
     )
-    
+
     # Initialize joint state publisher gui
     joint_state_publisher_gui_node = Node(
         package="joint_state_publisher_gui",
@@ -60,7 +60,7 @@ def generate_launch_description():
         name="joint_state_publisher_gui",
         condition=launch.conditions.IfCondition(LaunchConfiguration("gui")),
     )
-    
+
     # Initialize rviz2
     rviz_node = launch_ros.actions.Node(
         package="rviz2",
@@ -71,7 +71,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        
+
         # Declare launch arguments
         launch.actions.DeclareLaunchArgument(
             name="gui", default_value="True", description="Flag to enable joint_state_publisher_gui"
@@ -82,7 +82,7 @@ def generate_launch_description():
         launch.actions.DeclareLaunchArgument(
             name="rvizconfig", default_value=default_rviz2_path, description="Absolute path to rviz config file"
         ),
-        
+
         # Launch nodes
         joint_state_publisher_node,
         joint_state_publisher_gui_node,

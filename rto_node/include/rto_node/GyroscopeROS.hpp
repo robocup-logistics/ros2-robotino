@@ -41,7 +41,7 @@ private:
 	rclcpp::Node* node_;
 	rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_pub_;
 	rclcpp::TimerBase::SharedPtr timer_;
-	
+
 	sensor_msgs::msg::Imu imu_msg_;
 
 	void gyroscopeExtEvent(float angle, float rate);
