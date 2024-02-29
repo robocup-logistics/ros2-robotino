@@ -5,9 +5,9 @@ RTONode::RTONode(const std::string& name)
     : Node(name)
 {
     this->declare_parameter("hostname", "172.26.1.1");
-    this->declare_parameter("max_linear_vel", 1.0);
+    this->declare_parameter("max_linear_vel", 3.0);
     this->declare_parameter("min_linear_vel", 0.02);
-    this->declare_parameter("max_angular_vel", 1.0);
+    this->declare_parameter("max_angular_vel", 3.0);
     this->declare_parameter("min_angular_vel", 0.07);
     this->declare_parameter("tf_prefix", "");
 
