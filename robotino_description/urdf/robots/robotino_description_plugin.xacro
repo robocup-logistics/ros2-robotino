@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="$(arg namespace)" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="namespace" default="robotinobase2"/>
+  
+  
+    <!-- Define the Webots plugins -->
+    <webots>
+      <plugin type="webots_ros2_driver::Ros2IMU">
+        <enabled>true</enabled>
+        <topicName>/$(arg namespace)/imu</topicName>
+        <alwaysOn>true</alwaysOn>
+        <frameName>$(arg namespace)/imu_link</frameName>
+        <inertialUnitName>inertial unit</inertialUnitName>
+        <gyroName>gyro</gyroName>
+        <accelerometerName>accelerometer</accelerometerName>
+      </plugin>
+      <plugin type="robotino_simulation.$(arg namespace)_driver_plugin.Robotino3Driver"/>
+    </webots>
+</robot>
+
