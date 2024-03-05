@@ -15,7 +15,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://robotino_description/meshes/sensors/Sharp_IR_Sensor_GP2Y0A41SK0F.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          <mesh filename="package://rto_description/meshes/sensors/Sharp_IR_Sensor_GP2Y0A41SK0F.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
         </geometry>
       </visual>
     </link>

@@ -14,7 +14,7 @@
     <visual>
       <origin rpy="0 0 1.57095" xyz="0.01 0 0"/>
       <geometry>
-        <mesh filename="package://robotino_description/meshes/parts/robotino_base.dae" scale="0.01 0.01 0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_base.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
     <collision>
@@ -33,7 +33,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
   </link>
@@ -60,7 +60,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
   </link>
@@ -87,7 +87,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotino_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
   </link>
@@ -132,7 +132,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotino_description/meshes/parts/angle_bracket_usb_hub.dae" scale="0.01 0.01 0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/angle_bracket_usb_hub.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
   </link>
@@ -151,7 +151,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotino_description/meshes/sensors/Sharp_IR_Sensor_GP2Y0A41SK0F.dae" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://rto_description/meshes/sensors/Sharp_IR_Sensor_GP2Y0A41SK0F.dae" scale="0.001 0.001 0.001"/>
       </geometry>
     </visual>
   </link> -->

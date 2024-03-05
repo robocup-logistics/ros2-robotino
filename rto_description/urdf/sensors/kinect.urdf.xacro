@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot name="sensor_kinect" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:include filename="$(find robotino_description)/urdf/sensors/3dsensor_gazebo.urdf.xacro"/>
+  <xacro:include filename="$(find rto_description)/urdf/sensors/3dsensor_gazebo.urdf.xacro"/>
   <xacro:property name="KINECT_LENGTH" value="0.064"/>
   <xacro:property name="KINECT_WIDTH" value="0.121"/>
   <xacro:property name="KINECT_HEIGHT" value="0.0381"/>
@@ -22,7 +22,7 @@
         <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
         <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
         <geometry>
-          <mesh filename="package://robotino_description/meshes/sensors/kinect.dae"/>
+          <mesh filename="package://rto_description/meshes/sensors/kinect.dae"/>
           <!-- <box size="${KINECT_LENGTH} ${KINECT_WIDTH} ${KINECT_HEIGHT}"/> -->
         </geometry>
         <!-- <material name="${color}"/> -->

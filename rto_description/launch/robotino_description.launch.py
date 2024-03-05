@@ -31,12 +31,12 @@ from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration, Command
 import launch_ros.descriptions
 
-package_name = "robotino_description"
+package_name = "rto_description"
 
 def generate_launch_description():
     pkg_share = get_package_share_directory(package_name)
-    default_model_path = os.path.join(pkg_share, "urdf/robots/robotino_description.urdf")
-    default_rviz2_path = os.path.join(pkg_share, "rviz/robotino_description.rviz")
+    default_model_path = os.path.join(pkg_share, "urdf/robots/rto_description.urdf")
+    default_rviz2_path = os.path.join(pkg_share, "rviz/rto_description.rviz")
 
     # Initialize robot state publisher
     robot_state_publisher_node = launch_ros.actions.Node(

@@ -22,7 +22,7 @@
         <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}" />
         <geometry>
           <mesh
-filename="package://robotino_description/meshes/sensors/hokuyo.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+filename="package://rto_description/meshes/sensors/hokuyo.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
         </geometry>
       </visual>
       <collision>
