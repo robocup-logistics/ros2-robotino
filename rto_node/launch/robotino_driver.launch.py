@@ -30,6 +30,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.conditions import IfCondition
 import launch
+import xacro
 from launch.substitutions import LaunchConfiguration, Command
 
 
@@ -44,6 +45,9 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
     launch_rsp_freq = LaunchConfiguration('launch_rsp_freq')
+    # Process the Xacro file
+    xacro_description = xacro.process_file(robot_description.perform(context), mappings={}, in_order=True, base_path=os.path.dirname(robot_description.perform(context))).toxml()
+
 
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
@@ -84,7 +88,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             package="robot_state_publisher",
             executable="robot_state_publisher",
             namespace=namespace,
-            parameters=[{'robot_description': Command(["xacro ", robot_description]),
+            parameters=[{'robot_description': xacro_description,
                         'use_sim_time': use_sim_time,
                         'publish_frequency': launch_rsp_freq,
                         'frame_prefix': tf_prefix}],
@@ -125,7 +129,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     return[launch_nodes]
 
 def generate_launch_description():
-    pkg_share_description = get_package_share_directory('robotino_description')
+    pkg_share_description = get_package_share_directory('rto_description')
 
     # Declare launch configuration variables
     declare_namespace_argument = DeclareLaunchArgument(
