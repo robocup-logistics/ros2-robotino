@@ -14,7 +14,9 @@
         <gyroName>gyro</gyroName>
         <accelerometerName>accelerometer</accelerometerName>
       </plugin>
-      <plugin type="robotino_simulation.$(arg namespace)_driver_plugin.Robotino3Driver"/>
+	  <plugin type="robotino_driver::RobotinoDriver">
+        <namespace>$(arg namespace)</namespace>
+      </plugin>
     </webots>
 </robot>
 
