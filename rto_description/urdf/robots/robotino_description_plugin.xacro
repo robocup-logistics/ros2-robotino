@@ -16,6 +16,7 @@
       </plugin>
 	  <plugin type="robotino_driver::RobotinoDriver">
         <namespace>$(arg namespace)</namespace>
+        <frequency>$(arg frequency)</frequency>
       </plugin>
     </webots>
 </robot>
