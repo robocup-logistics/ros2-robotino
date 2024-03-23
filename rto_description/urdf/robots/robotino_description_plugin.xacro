@@ -14,7 +14,21 @@
         <gyroName>gyro</gyroName>
         <accelerometerName>accelerometer</accelerometerName>
       </plugin>
-	  <plugin type="robotino_driver::RobotinoDriver">
+      <device reference="SickLaser_Front" type="Lidar">
+        <ros>
+          <enabled>true</enabled>
+          <updateRate>60</updateRate>
+          <alwaysOn>true</alwaysOn>
+        </ros>
+      </device>
+      <device reference="SickLaser_Rear" type="Lidar">
+        <ros>
+          <enabled>true</enabled>
+          <updateRate>60</updateRate>
+          <alwaysOn>true</alwaysOn>
+        </ros>
+      </device>
+      <plugin type="robotino_driver::RobotinoDriver">
         <namespace>$(arg namespace)</namespace>
         <frequency>$(arg frequency)</frequency>
       </plugin>
