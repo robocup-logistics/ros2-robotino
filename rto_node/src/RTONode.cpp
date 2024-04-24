@@ -6,9 +6,9 @@ RTONode::RTONode(const std::string& name)
 {
     this->declare_parameter("hostname", "172.26.1.1");
     this->declare_parameter("max_linear_vel", 0.2);
-    this->declare_parameter("min_linear_vel", 0.05);
+    this->declare_parameter("min_linear_vel", 0.02);
     this->declare_parameter("max_angular_vel", 1.0);
-    this->declare_parameter("min_angular_vel", 0.1);
+    this->declare_parameter("min_angular_vel", 0.07);
     this->declare_parameter("tf_prefix", "no_prefix");
 
     joint_states_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("robotino_joint_states", 10);
