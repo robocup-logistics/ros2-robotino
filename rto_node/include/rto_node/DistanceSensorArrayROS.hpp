@@ -5,6 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/point_cloud.hpp"
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 class DistanceSensorArrayROS: public rec::robotino::api2::DistanceSensorArray
 {
@@ -16,11 +17,13 @@ public:
 
 private:
 	rclcpp::Node* node_;
-	rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr distances_pub_;
-	sensor_msgs::msg::PointCloud distances_msg_;
+	rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr irpcloud_pub_;
+	sensor_msgs::msg::PointCloud irpcloud_msg_;
+
+	rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr irlaserscan_pub_;
+	sensor_msgs::msg::LaserScan irlaserscan_msg_;
 
 	void distancesChangedEvent(const float* distances, unsigned int size);
 };
-
 
 #endif /* DISTANCESENSORARRAYROS_HPP_ */

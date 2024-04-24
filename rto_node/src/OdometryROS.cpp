@@ -17,10 +17,10 @@ OdometryROS::~OdometryROS()
 
 void OdometryROS::setFrameId(const std::string& tf_prefix)
 {
-	odometry_msg_.header.frame_id = (tf_prefix == "no_prefix") ? "odom" : (tf_prefix + "/odom");
-	odometry_msg_.child_frame_id = (tf_prefix == "no_prefix") ? "base_link" : (tf_prefix + "/base_link");
-	odometry_transform_.header.frame_id = (tf_prefix == "no_prefix") ? "odom" : (tf_prefix + "/odom");
-	odometry_transform_.child_frame_id = (tf_prefix == "no_prefix") ? "base_link" : (tf_prefix + "/base_link");
+	odometry_msg_.header.frame_id = (tf_prefix == "") ? "odom" : (tf_prefix + "odom");
+	odometry_msg_.child_frame_id = (tf_prefix == "") ? "base_link" : (tf_prefix + "base_link");
+	odometry_transform_.header.frame_id = (tf_prefix == "") ? "odom" : (tf_prefix + "odom");
+	odometry_transform_.child_frame_id = (tf_prefix == "") ? "base_link" : (tf_prefix + "base_link");
 }
 
 void OdometryROS::readingsEvent(double x, double y, double phi,
@@ -45,16 +45,17 @@ void OdometryROS::readingsEvent(double x, double y, double phi,
 	odometry_msg_.twist.twist.angular.y = 0.0;
 	odometry_msg_.twist.twist.angular.z = omega;
 
-	odometry_transform_.header.stamp = odometry_msg_.header.stamp;
-	odometry_transform_.transform.translation.x = x;
-	odometry_transform_.transform.translation.y = y;
-	odometry_transform_.transform.translation.z = 0.0;
-	odometry_transform_.transform.rotation.x = phi_quat.getX();
-	odometry_transform_.transform.rotation.y = phi_quat.getY();
-	odometry_transform_.transform.rotation.z = phi_quat.getZ();
-	odometry_transform_.transform.rotation.w = phi_quat.getW();
+	// Commentd: Transform is not needed, being published by the ekf fusion node
+	// odometry_transform_.header.stamp = odometry_msg_.header.stamp;
+	// odometry_transform_.transform.translation.x = x;
+	// odometry_transform_.transform.translation.y = y;
+	// odometry_transform_.transform.translation.z = 0.0;
+	// odometry_transform_.transform.rotation.x = phi_quat.getX();
+	// odometry_transform_.transform.rotation.y = phi_quat.getY();
+	// odometry_transform_.transform.rotation.z = phi_quat.getZ();
+	// odometry_transform_.transform.rotation.w = phi_quat.getW();
 
-	odometry_transform_broadcaster_->sendTransform(odometry_transform_);
+	// odometry_transform_broadcaster_->sendTransform(odometry_transform_);
 
 	// Publish the msg
 	odometry_pub_->publish(odometry_msg_);

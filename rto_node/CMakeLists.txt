@@ -7,6 +7,8 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclpy REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tf2)
 find_package(tf2_ros)
@@ -14,6 +16,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 #set(CMAKE_MODULE_PATH ~/ros2_ws/install/robotino_msgs/share/robotino_msgs/cmake)
 find_package(rto_msgs REQUIRED)
@@ -28,6 +31,13 @@ find_package(RobotinoAPI2)
 set(CMAKE_MODULE_PATH /opt/rec_rpc/cmake)
 find_package(RecRpc)
 
+ament_python_install_package(${PROJECT_NAME})
+
+install(PROGRAMS
+  scripts/robotino_teleop.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
@@ -39,6 +49,7 @@ add_executable(${PROJECT_NAME}
   src/ComROS.cpp
   src/PowerManagementROS.cpp
   src/OmniDriveROS.cpp
+  src/GyroscopeROS.cpp
   src/MotorArrayROS.cpp
   src/BumperROS.cpp
   src/AnalogInputArrayROS.cpp
@@ -48,6 +59,7 @@ add_executable(${PROJECT_NAME}
   src/ElectricalGripperROS.cpp
   src/EncoderInputROS.cpp
 )
+
 target_link_libraries(${PROJECT_NAME} ${REC_ROBOTINO_API2_LIBRARY})
 ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs std_msgs rto_msgs)
 
@@ -81,6 +93,11 @@ ament_target_dependencies(rto_camera_node rclcpp std_msgs sensor_msgs)
 install(
   TARGETS ${PROJECT_NAME} rto_odometry_node rto_camera_node rto_laserrangefinder_node
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY launch rviz
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

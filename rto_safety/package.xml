@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>rto_node</build_depend>
+  <depend>rto_msgs</depend>
   <exec_depend>rto_node</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

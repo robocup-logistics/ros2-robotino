@@ -4,7 +4,7 @@ RTOOdometryNode::RTOOdometryNode(const std::string& name)
 	: Node(name)
 {
 	this->declare_parameter("hostname", "172.26.1.1");
-	this->declare_parameter("tf_prefix", "no_prefix");
+	this->declare_parameter("tf_prefix", "");
 
 	initModules();
 }

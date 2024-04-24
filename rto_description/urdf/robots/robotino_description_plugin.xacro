@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot name="$(arg namespace)" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="namespace" default="robotinobase2"/>
+  
+  
+    <!-- Define the Webots plugins -->
+    <webots>
+      <plugin type="webots_ros2_driver::Ros2IMU">
+        <enabled>true</enabled>
+        <topicName>/$(arg namespace)/imu</topicName>
+        <alwaysOn>true</alwaysOn>
+        <frameName>$(arg namespace)/imu_link</frameName>
+        <inertialUnitName>inertial unit</inertialUnitName>
+        <gyroName>gyro</gyroName>
+        <accelerometerName>accelerometer</accelerometerName>
+      </plugin>
+      <device reference="SickLaser_Front" type="Lidar">
+        <ros>
+          <enabled>true</enabled>
+          <updateRate>60</updateRate>
+          <alwaysOn>true</alwaysOn>
+        </ros>
+      </device>
+      <device reference="SickLaser_Rear" type="Lidar">
+        <ros>
+          <enabled>true</enabled>
+          <updateRate>60</updateRate>
+          <alwaysOn>true</alwaysOn>
+        </ros>
+      </device>
+      <plugin type="robotino_driver::RobotinoDriver">
+        <namespace>$(arg namespace)</namespace>
+        <frequency>$(arg frequency)</frequency>
+      </plugin>
+    </webots>
+</robot>
+
