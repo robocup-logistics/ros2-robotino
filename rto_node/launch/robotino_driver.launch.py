@@ -45,6 +45,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
     launch_rsp_freq = LaunchConfiguration('launch_rsp_freq')
+    launch_odom_tf = LaunchConfiguration('launch_odom_tf')
     # Process the Xacro file
     xacro_description = xacro.process_file(robot_description.perform(context), mappings={}, in_order=True, base_path=os.path.dirname(robot_description.perform(context))).toxml()
 
@@ -69,7 +70,6 @@ def launch_nodes_withconfig(context, *args, **kwargs):
                 'hostname' : hostname,
                 'tf_prefix' : tf_prefix,
             }],
-            remappings=[("joint_states", '/'+launch_configuration['namespace']+"/joint_states")],
         ),
 
         Node(
@@ -79,7 +79,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             namespace=namespace,
             parameters=[{
                 'hostname' : hostname,
-                'tf_prefix' : launch_configuration['namespace']+'/'
+                'tf_prefix' : launch_configuration['namespace']+'/',
+                'publish_odom_tf': launch_odom_tf
             }]
         ),
 
@@ -100,8 +101,6 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             executable="joint_state_publisher",
             name="joint_state_publisher",
             namespace=namespace,
-            remappings=[("robot_description", '/'+launch_configuration['namespace']+"/robot_description"),
-                        ("joint_states", '/'+launch_configuration['namespace']+"/joint_states")],
             condition = IfCondition(launch_jsb),
         ),
 
@@ -140,7 +139,7 @@ def generate_launch_description():
         'use_sim_time', default_value='false',
         description='Use simulation clock if true')
 
-    declare_launch_rviz_argument = DeclareLaunchArgument(
+    declare_launch_jsb_argument = DeclareLaunchArgument(
         'launch_jsb',
         default_value='false',
         description= 'Weather to start Rvizor not based on launch environment')
@@ -149,7 +148,7 @@ def generate_launch_description():
         'robot_description',default_value=os.path.join(pkg_share_description, "urdf/robots/robotino_description.urdf"),
         description='Full path to mps_config.yaml file to load')
 
-    declare_namespace_argument = DeclareLaunchArgument(
+    declare_hostname_argument = DeclareLaunchArgument(
         'hostname', default_value='172.26.1.1:12080',
         description='ip address of robotino')
 
@@ -167,6 +166,11 @@ def generate_launch_description():
         default_value='true',
         description= 'Weather to start teleop node not based on launch environment')
 
+    declare_launch_odom_tf_argument = DeclareLaunchArgument(
+        'launch_odom_tf',
+        default_value='false',
+        description= 'Weather to broadcast the tf for odom frame on launch environment')
+
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -174,11 +178,13 @@ def generate_launch_description():
     # Declare the launch options
     ld.add_action(declare_namespace_argument)
     ld.add_action(declare_use_sim_time_argument)
-    ld.add_action(declare_launch_rviz_argument)
+    ld.add_action(declare_launch_jsb_argument)
     ld.add_action(declare_robot_description_config_argument)
+    ld.add_action(declare_hostname_argument)
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_rsp_freq_argument)
+    ld.add_action(declare_launch_odom_tf_argument)
 
 
     # Add the actions to launch webots, controllers and rviz
