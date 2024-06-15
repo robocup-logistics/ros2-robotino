@@ -3,7 +3,7 @@
 MotorArrayROS::MotorArrayROS(rclcpp::Node* node) : node_(node)
 {
 	motor_pub_ = node_->create_publisher<rto_msgs::msg::MotorReadings>("motor_readings", 10);
-	joint_states_pub_ = node->create_publisher<sensor_msgs::msg::JointState>(std::string(node_->get_namespace())+"/joint_states", 10);
+	joint_states_pub_ = node->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
 
 	initMsgs();
 }
