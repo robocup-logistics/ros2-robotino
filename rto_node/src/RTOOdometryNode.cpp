@@ -5,7 +5,7 @@ RTOOdometryNode::RTOOdometryNode(const std::string& name)
 {
 	this->declare_parameter("hostname", "172.26.1.1");
 	this->declare_parameter("tf_prefix", "");
-	this->declare_parameter("publish_odom_tf", false)
+	this->declare_parameter("publish_odom_tf", true);
 
 	initModules();
 }
@@ -20,7 +20,7 @@ void RTOOdometryNode::initModules()
 	auto tf_prefix = this->get_parameter("tf_prefix").as_string();
 	auto publish_odom_tf = this->get_parameter("publish_odom_tf").as_bool();
 
-    com_ = std::make_shared<ComROS>();
+    	com_ = std::make_shared<ComROS>();
 	com_->setName("Odometry");
 	com_->setAddress(hostname.c_str());
 

@@ -25,7 +25,10 @@ void OdometryROS::setFrameId(const std::string& tf_prefix)
 
 void OdometryROS::setOdomTransform(bool publish_odom_tf)
 {
- if (publish_odom_tf){publish_tf= true;}
+	if(publish_odom_tf)
+	{
+		publish_tf= true;
+	}
 }
 
 void OdometryROS::readingsEvent(double x, double y, double phi,
@@ -51,7 +54,7 @@ void OdometryROS::readingsEvent(double x, double y, double phi,
 	odometry_msg_.twist.twist.angular.z = omega;
 
 	// Commentd: Transform is not needed, being published by the ekf fusion node
-	if (publish_odom_tf){
+	if (publish_tf){
 		odometry_transform_.header.stamp = odometry_msg_.header.stamp;
 		odometry_transform_.transform.translation.x = x;
 		odometry_transform_.transform.translation.y = y;
