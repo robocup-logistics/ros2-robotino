@@ -31,6 +31,7 @@
       <plugin type="robotino_driver::RobotinoDriver">
         <namespace>$(arg namespace)</namespace>
         <frequency>$(arg frequency)</frequency>
+        <odom_source>$(arg odom_source)</odom_source>
       </plugin>
     </webots>
 </robot>
