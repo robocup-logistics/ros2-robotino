@@ -36,10 +36,10 @@ class Robotino3Teleop(Node):
         super().__init__('robotino_joyteleop', namespace='')
         
         # create subscription to joy topic
-        self.subscription = self.create_subscription(Joy, self.get_namespace()+'/joy', self.TeleopCallback, 10)
+        self.subscription = self.create_subscription(Joy, 'joy', self.TeleopCallback, 10)
         
         # create publisher to cmd_vel topic
-        self.publisher= self.create_publisher(Twist, self.get_namespace()+'/cmd_vel', 10)
+        self.publisher= self.create_publisher(Twist, 'cmd_vel', 10)
         
         # Initialize parameters
         self.declare_parameter('forward_axis_scalling', 1.0)
