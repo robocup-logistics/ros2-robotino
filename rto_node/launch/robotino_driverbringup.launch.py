@@ -107,7 +107,7 @@ def generate_launch_description():
 
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
         'launch_odom_tf',
-        default_value='true',
+        default_value='false',
         description= 'Wheather to broadcast transform based on launch environment')
 
     # Create the launch description and populate
@@ -117,6 +117,7 @@ def generate_launch_description():
     ld.add_action(declare_namespace_argument)
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
+    ld.add_action(declare_launch_odom_tf_argument)
 
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))
