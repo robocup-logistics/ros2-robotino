@@ -46,6 +46,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_joynode = LaunchConfiguration('launch_joynode')
     launch_rsp_freq = LaunchConfiguration('launch_rsp_freq')
     launch_odom_tf = LaunchConfiguration('launch_odom_tf')
+    bumper_stop_time = LaunchConfiguration('bumper_stop_time')
     # Process the Xacro file
     xacro_description = xacro.process_file(robot_description.perform(context), mappings={}, in_order=True, base_path=os.path.dirname(robot_description.perform(context))).toxml()
 
@@ -69,6 +70,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             parameters=[{
                 'hostname' : hostname,
                 'tf_prefix' : tf_prefix,
+                'bumper_stop_time' : bumper_stop_time
             }],
         ),
 
@@ -79,8 +81,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             namespace=namespace,
             parameters=[{
                 'hostname' : hostname,
-                'tf_prefix' : launch_configuration['namespace']+'/',
-                'publish_odom_tf': launch_odom_tf
+                'tf_prefix' : launch_configuration['namespace']+'/'
             }]
         ),
 
@@ -165,6 +166,11 @@ def generate_launch_description():
         'launch_teleopnode',
         default_value='true',
         description= 'Weather to start teleop node not based on launch environment')
+    
+    declare_bumper_stop_time_argument = DeclareLaunchArgument(
+        'bumper_stop_time',
+        default_value='10.0',
+        description= 'Time to stop robot when bumper is hit')
 
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
         'launch_odom_tf',
@@ -184,7 +190,6 @@ def generate_launch_description():
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_rsp_freq_argument)
-    ld.add_action(declare_launch_odom_tf_argument)
 
 
     # Add the actions to launch webots, controllers and rviz
