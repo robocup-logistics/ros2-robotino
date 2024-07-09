@@ -10,11 +10,6 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) : node_(node)
 
 	bumper_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
       "bumper", 10, std::bind(&OmniDriveROS::bumperCallback, this, std::placeholders::_1));
-
-	timer_ = node->create_wall_timer(
-        std::chrono::milliseconds(2000), 
-        std::bind(&OmniDriveROS::timerCallback, this));
-    timer_->cancel(); // Start with the timer canceled
 }
 
 OmniDriveROS::~OmniDriveROS()
@@ -114,3 +109,14 @@ bool OmniDriveROS::handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv
     return true;
 }
 
+
+
+void OmniDriveROS::setBumperTime(double period_sec)
+{
+	timer_period_ = period_sec;
+
+	timer_ = node->create_wall_timer(
+        std::chrono::duration<double>(timer_period_), 
+        std::bind(&OmniDriveROS::timerCallback, this));
+    timer_->cancel(); // Start with the timer canceled
+}
