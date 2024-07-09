@@ -81,7 +81,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             namespace=namespace,
             parameters=[{
                 'hostname' : hostname,
-                'tf_prefix' : launch_configuration['namespace']+'/'
+                'tf_prefix' : launch_configuration['namespace']+'/', 
+                'publish_odom_tf': launch_odom_tf
             }]
         ),
 
@@ -190,6 +191,8 @@ def generate_launch_description():
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_rsp_freq_argument)
+    ld.add_action(declare_bumper_stop_time_argument)
+    ld.add_action(declare_launch_odom_tf_argument)
 
 
     # Add the actions to launch webots, controllers and rviz
