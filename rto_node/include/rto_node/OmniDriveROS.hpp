@@ -17,7 +17,7 @@ public:
 	void setMaxMin(double max_linear_vel, double min_linear_vel,
 		double max_angular_vel, double min_angular_vel);
 
-	void setBumperTime(int period_sec);
+	void setBumperTime(double period_sec);
 private:
 	rclcpp::Node* node_;
 	rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
@@ -32,6 +32,7 @@ private:
 	double min_angular_vel_;
 	bool bumperhit_prev_state = false;
 	bool bumperhit_current_state = false;
+	bool bumper_hit=false;
 	rclcpp::TimerBase::SharedPtr timer_;
 	double timer_period_ = 2.0;
 
