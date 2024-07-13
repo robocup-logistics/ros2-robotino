@@ -18,11 +18,12 @@ void OmniDriveROS::bumperCallback(const std_msgs::msg::Bool::SharedPtr msg)
 {
 	if( msg->data )
 	{	
-		if (!bumperhit_current_state && bumperhit_prev_state){
-			timer_->reset();
-		}else if(!bumperhit_current_state && !bumperhit_prev_state){
+		if (!bumper_hit){
+			if (!bumperhit_current_state && !bumperhit_prev_state){
 			bumperhit_current_state = true;
+			bumper_hit = true;
 			timer_->reset();
+			}
 		}
 	}
 }
@@ -33,9 +34,9 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 		RCLCPP_DEBUG(node_->get_logger(), "OmniDrive is disabled. No velocity is set.");
 		return;
 	}
-	if(!bumperhit_current_state){	
+	if(!bumper_hit){	
 		double linear_x = msg->linear.x;
-		double linear_y = msg->linear.y;bumper_hit
+		double linear_y = msg->linear.y;
 		double angular = msg->angular.z;
 
 		if ( fabs( linear_x ) > max_linear_vel_ )
@@ -92,13 +93,14 @@ void OmniDriveROS::timerCallback()
 	if (bumperhit_current_state && !bumperhit_prev_state){
 		bumperhit_prev_state = bumperhit_current_state;
 		bumperhit_current_state = false;
+		bumper_hit = false;
 		timer_->cancel();
-	}else if(!bumperhit_current_state && bumperhit_prev_state){
-		bumperhit_prev_state = bumperhit_current_state;
+		timer_->reset();
+	}else if (!bumperhit_current_state && bumperhit_prev_state){
 		bumperhit_current_state = false;
+		bumperhit_prev_state = false;
 		timer_->cancel();
 	}
-
 }
 
 void OmniDriveROS::setMaxMin(double max_linear_vel, double min_linear_vel, double max_angular_vel, double min_angular_vel)
@@ -122,7 +124,7 @@ void OmniDriveROS::setBumperTime(double period_sec)
 {
 	timer_period_ = period_sec;
 
-	timer_ = node->create_wall_timer(
+	timer_ = node_->create_wall_timer(
         std::chrono::duration<double>(timer_period_), 
         std::bind(&OmniDriveROS::timerCallback, this));
     timer_->cancel(); // Start with the timer canceled
