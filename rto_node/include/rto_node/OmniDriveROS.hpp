@@ -30,7 +30,8 @@ private:
 	double min_linear_vel_;
 	double max_angular_vel_;
 	double min_angular_vel_;
-	bool bumper_hit = false;
+	bool bumperhit_prev_state = false;
+	bool bumperhit_current_state = false;
 	rclcpp::TimerBase::SharedPtr timer_;
 	double timer_period_ = 2.0;
 

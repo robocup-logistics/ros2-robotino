@@ -6,8 +6,6 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) : node_(node)
 		"cmd_vel", 10, std::bind(&OmniDriveROS::cmdVelCallback, this, std::placeholders::_1));
 	set_enabled_srv_ = node_->create_service<rto_msgs::srv::SetOmniDriveEnabled>(
 		"cmd_vel_enable", std::bind(&OmniDriveROS::handleSetOmniDriveEnabled, this, std::placeholders::_1, std::placeholders::_2));
-
-
 	bumper_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
       "bumper", 10, std::bind(&OmniDriveROS::bumperCallback, this, std::placeholders::_1));
 }
@@ -19,10 +17,13 @@ OmniDriveROS::~OmniDriveROS()
 void OmniDriveROS::bumperCallback(const std_msgs::msg::Bool::SharedPtr msg)
 {
 	if( msg->data )
-	{
-		setVelocity(0.0, 0.0, 0.0);
-		bumper_hit = true;
-		timer_->reset();
+	{	
+		if (!bumperhit_current_state && bumperhit_prev_state){
+			timer_->reset();
+		}else if(!bumperhit_current_state && !bumperhit_prev_state){
+			bumperhit_current_state = true;
+			timer_->reset();
+		}
 	}
 }
 
@@ -32,9 +33,9 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 		RCLCPP_DEBUG(node_->get_logger(), "OmniDrive is disabled. No velocity is set.");
 		return;
 	}
-	if( !bumper_hit ){	
+	if(!bumperhit_current_state){	
 		double linear_x = msg->linear.x;
-		double linear_y = msg->linear.y;
+		double linear_y = msg->linear.y;bumper_hit
 		double angular = msg->angular.z;
 
 		if ( fabs( linear_x ) > max_linear_vel_ )
@@ -87,9 +88,17 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 }
 
 void OmniDriveROS::timerCallback()
-{
-    bumper_hit = false;
-    timer_->cancel();
+{	
+	if (bumperhit_current_state && !bumperhit_prev_state){
+		bumperhit_prev_state = bumperhit_current_state;
+		bumperhit_current_state = false;
+		timer_->cancel();
+	}else if(!bumperhit_current_state && bumperhit_prev_state){
+		bumperhit_prev_state = bumperhit_current_state;
+		bumperhit_current_state = false;
+		timer_->cancel();
+	}
+
 }
 
 void OmniDriveROS::setMaxMin(double max_linear_vel, double min_linear_vel, double max_angular_vel, double min_angular_vel)
@@ -108,8 +117,6 @@ bool OmniDriveROS::handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv
     RCLCPP_INFO(node_->get_logger(), "OmniDrive is now %s", enabled_ ? "enabled" : "disabled");
     return true;
 }
-
-
 
 void OmniDriveROS::setBumperTime(double period_sec)
 {
