@@ -163,7 +163,7 @@ def generate_launch_description():
         default_value='true',
         description= 'Weather to start joynode based on launch environment')
 
-   declare_joy_deadzone_argument = DeclareLaunchArgument(
+    declare_joy_deadzone_argument = DeclareLaunchArgument(
         'joy_deadzone',
         default_value='0.2',
         description= 'deadzone for joy node to aboid movement when idle due to joystick jitter')

@@ -29,6 +29,9 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64MultiArray
 import array
 import math
+import socket
+import struct
+import sys
 
 class Robotino3Teleop(Node):
 
@@ -40,10 +43,18 @@ class Robotino3Teleop(Node):
         
         # create publisher to cmd_vel topic
         self.publisher= self.create_publisher(Twist, 'cmd_vel', 10)
+
+        self.saved_img = False
+        self.release_img = True
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket.connect(("192.168.0.100", 6465))
         
         # Initialize parameters
         self.declare_parameter('forward_axis_scalling', 1.0)
         self.declare_parameter('angular_axis_scalling', 1.0)
+
+    def __del__(self):
+        self.client_socket.close()
         
     # callback function to publish data over cmd_vel topic based on joy_pad inputs
     def TeleopCallback(self, data):
@@ -59,6 +70,20 @@ class Robotino3Teleop(Node):
         p_msg.angular.y = 0.0
         p_msg.angular.z = data.axes[3]*z_scale
 
+        if not self.release_img and data.buttons[4] == 0 and data.buttons[5] == 0 :
+          self.release_img = True
+
+        if data.buttons[4] == 1 and data.buttons[5] == 1:
+          self.saved_img = True
+        else:
+          self.saved_img = False
+        if self.saved_img and self.release_img:
+            message_type = 15
+            message = struct.pack('!BQ', message_type,0)
+            self.client_socket.sendall(message)
+            self.get_logger().info('Img saved.')
+            self.release_img = False
+            self.saved_img = False
         self.publisher.publish(p_msg)
 
 def main():
