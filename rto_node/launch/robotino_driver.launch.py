@@ -44,6 +44,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     hostname = LaunchConfiguration('hostname')
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
+    joy_deadzone = LaunchConfiguration('joy_deadzone')
     launch_rsp_freq = LaunchConfiguration('launch_rsp_freq')
     launch_odom_tf = LaunchConfiguration('launch_odom_tf')
     # Process the Xacro file
@@ -111,6 +112,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             name="joy_node",
             output="log",
             namespace=namespace,
+            parameters=[{"deadzone": joy_deadzone}],
             condition= IfCondition(launch_joynode)
         ),
 
@@ -161,6 +163,11 @@ def generate_launch_description():
         default_value='true',
         description= 'Weather to start joynode based on launch environment')
 
+   declare_joy_deadzone_argument = DeclareLaunchArgument(
+        'joy_deadzone',
+        default_value='0.2',
+        description= 'deadzone for joy node to avoid movement when idle due to joystick jitter')
+
     declare_launch_teleopnode_argument = DeclareLaunchArgument(
         'launch_teleopnode',
         default_value='true',
@@ -182,6 +189,7 @@ def generate_launch_description():
     ld.add_action(declare_robot_description_config_argument)
     ld.add_action(declare_hostname_argument)
     ld.add_action(declare_launch_joynode_argument)
+    ld.add_action(declare_joy_deadzone_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_rsp_freq_argument)
     ld.add_action(declare_launch_odom_tf_argument)
