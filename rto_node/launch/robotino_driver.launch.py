@@ -170,7 +170,7 @@ def generate_launch_description():
     
     declare_bumper_stop_time_argument = DeclareLaunchArgument(
         'bumper_stop_time',
-        default_value='10.0',
+        default_value='1.0',
         description= 'Time to stop robot when bumper is hit')
 
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
