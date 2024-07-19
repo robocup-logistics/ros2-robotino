@@ -11,6 +11,8 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) :
 		"cmd_vel", 10, std::bind(&OmniDriveROS::cmdVelCallback, this, std::placeholders::_1));
 	set_enabled_srv_ = node_->create_service<rto_msgs::srv::SetOmniDriveEnabled>(
 		"cmd_vel_enable", std::bind(&OmniDriveROS::handleSetOmniDriveEnabled, this, std::placeholders::_1, std::placeholders::_2));
+	set_velocitylimit_srv_ = node_->create_service<rto_msgs::srv::SetVelLimits>(
+		"set_velocity_limits", std::bind(&OmniDriveROS::handleSetVelLimits, this, std::placeholders::_1, std::placeholders::_2));
 	bumper_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
       "bumper", 10, std::bind(&OmniDriveROS::bumperCallback, this, std::placeholders::_1));
 	motor_error_pub_ = node_->create_publisher<rto_msgs::msg::MotorErrorReadings>("motor_error_readings", 10);
@@ -194,6 +196,19 @@ bool OmniDriveROS::handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv
 	
     response->success = true;
     RCLCPP_INFO(node_->get_logger(), "OmniDrive is now %s", enabled_ ? "enabled" : "disabled");
+    return true;
+}
+
+bool OmniDriveROS::handleSetVelLimits(const std::shared_ptr<rto_msgs::srv::SetVelLimits::Request> request,
+                                    std::shared_ptr<rto_msgs::srv::SetVelLimits::Response> response)
+{	
+	max_linear_vel_ = request->max_linear_vel;
+	min_linear_vel_ = request->min_linear_vel;
+	max_angular_vel_ = request->max_angular_vel;
+	min_angular_vel_ = request->min_angular_vel;
+    response->success = true;
+    RCLCPP_INFO(node_->get_logger(), "Velocity limits set to: max_linear_vel: %f, min_linear_vel: %f, max_angular_vel: %f, min_angular_vel: %f", 
+				max_linear_vel_, min_linear_vel_, max_angular_vel_, min_angular_vel_);
     return true;
 }
 
