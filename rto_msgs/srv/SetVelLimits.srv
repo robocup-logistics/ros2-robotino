@@ -1,0 +1,6 @@
+float64 max_linear_vel
+float64 min_linear_vel
+float64 max_angular_vel
+float64 min_angular_vel
+---
+bool success
