@@ -45,7 +45,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
     joy_deadzone = LaunchConfiguration('joy_deadzone')
-    launch_rsp_freq = LaunchConfiguration('launch_rsp_freq')
+    launch_rsp_freq = LaunchConfiguration('rsp_freq')
     launch_odom_tf = LaunchConfiguration('launch_odom_tf')
     # Process the Xacro file
     xacro_description = xacro.process_file(robot_description.perform(context), mappings={}, in_order=True, base_path=os.path.dirname(robot_description.perform(context))).toxml()
@@ -144,24 +144,24 @@ def generate_launch_description():
     declare_launch_jsb_argument = DeclareLaunchArgument(
         'launch_jsb',
         default_value='false',
-        description= 'Weather to start Rvizor not based on launch environment')
+        description= 'Whether to start the joint state broadcaster or not')
 
     declare_robot_description_config_argument = DeclareLaunchArgument(
         'robot_description',default_value=os.path.join(pkg_share_description, "urdf/robots/robotino_description.urdf"),
-        description='Full path to mps_config.yaml file to load')
+        description='Full path to robot description')
 
     declare_hostname_argument = DeclareLaunchArgument(
         'hostname', default_value='172.26.1.1:12080',
         description='ip address of robotino')
 
     declare_launch_rsp_freq_argument = DeclareLaunchArgument(
-        'launch_rsp_freq', default_value='20.0',
+        'rsp_freq', default_value='20.0',
         description='publish frequency for robot state publisher node')
 
     declare_launch_joynode_argument = DeclareLaunchArgument(
         'launch_joynode',
         default_value='true',
-        description= 'Weather to start joynode based on launch environment')
+        description= 'Whether to start joynode based on launch environment')
 
    declare_joy_deadzone_argument = DeclareLaunchArgument(
         'joy_deadzone',
@@ -171,12 +171,12 @@ def generate_launch_description():
     declare_launch_teleopnode_argument = DeclareLaunchArgument(
         'launch_teleopnode',
         default_value='true',
-        description= 'Weather to start teleop node not based on launch environment')
+        description= 'Whether to start teleop node')
 
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
         'launch_odom_tf',
         default_value='false',
-        description= 'Weather to broadcast the tf for odom frame on launch environment')
+        description= 'Whether to broadcast the tf for odom frame')
 
 
     # Create the launch description and populate
