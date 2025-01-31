@@ -39,6 +39,14 @@ void MotorArrayROS::velocitiesChangedEvent(const float* velocities, unsigned int
 		joint_state_msg_.velocity[0] = ((velocities[2] / 16) * (2 * 3.142) / 60);
 		joint_state_msg_.velocity[1] = ((velocities[0] / 16) * (2 * 3.142) / 60);
 		joint_state_msg_.velocity[2] = ((velocities[1] / 16) * (2 * 3.142) / 60);
+
+		for (size_t i = 0; i < motor_msg_.velocities.size(); i++)
+        {
+            if (motor_msg_.velocities[i] > 0.0 && motor_msg_.positions[i] == previous_positions_[i])
+            {
+                RCLCPP_ERROR(node_->get_logger(), "Sensor error detected on wheel %zu: velocity is > 0 but position remains unchanged!", i);
+            }
+        }
 	}
 }
 
@@ -46,6 +54,7 @@ void MotorArrayROS::positionsChangedEvent(const int* positions, unsigned int siz
 {
 	// Build the MotorReadings msg
 	motor_msg_.positions.resize(size, 0.0);
+	previous_positions_.assign(motor_msg_.positions.begin(), motor_msg_.positions.end());
 
 	if(positions != NULL)
 	{
@@ -71,7 +80,4 @@ void MotorArrayROS::currentsChangedEvent(const float* currents, unsigned int siz
 
 	joint_state_msg_.header.stamp = node_->now();
 	joint_states_pub_->publish(joint_state_msg_);
-
-	
-	
 }

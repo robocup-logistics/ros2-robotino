@@ -22,6 +22,7 @@ private:
 
 	rto_msgs::msg::MotorReadings motor_msg_;
 	sensor_msgs::msg::JointState joint_state_msg_;
+	std::vector<double> preveous_positions_;
 
 	void velocitiesChangedEvent(const float* velocities, unsigned int size);
 	void positionsChangedEvent(const int* positions, unsigned int size);
