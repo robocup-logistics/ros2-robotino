@@ -10,7 +10,7 @@
 #include "rto_msgs/srv/set_omni_drive_enabled.hpp"
 #include "std_msgs/msg/bool.hpp"
 
-class OmniDriveROS: public rec::robotino::api2::OmniDrive
+class OmniDriveROS: public rec::robotino::api2::OmniDrive, public rec::robotino::api2::MotorArray
 {
 public:
 	OmniDriveROS(rclcpp::Node* node);
@@ -38,10 +38,14 @@ private:
 	rclcpp::TimerBase::SharedPtr timer_;
 	double timer_period_ = 2.0;
 	std::array<float, 3> mSetVelocities;
-	std::array<float, 3> mGetVelocities;
+	std::vector<float> mGetVelocities(3, 0.0f);
+	std::vector<int> mGetPositions(3, 0);
+
+	rec::robotino::api2::OmniDriveModel omniDriveModel_;
+	rec::robotino::api2::MotorArray motorArray_;
 
 	void project(float *m1, float *m2, float *m3, float vx, float vy, float omega) const
-	void velocitiesChangedEvent(const float* velocities, unsigned int size);
+	//void velocitiesChangedEvent(const float* velocities, unsigned int size) override;
 	void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
 
 	bool handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv::SetOmniDriveEnabled::Request> request,

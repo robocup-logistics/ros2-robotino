@@ -85,10 +85,14 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 		}
 
 		setVelocity(linear_x, linear_y, angular);
-		project(&mSetVelocities[0], &mSetVelocities[1], &mSetVelocities[2], linear_x, linear_y, angular);
+		omniDriveModel_.project(&mSetVelocities[0], &mSetVelocities[1], &mSetVelocities[2], linear_x, linear_y, angular);
+		RCLCPP_INFO(node_->get_logger(), "Set velocities: %f, %f, %f", mSetVelocities[0], mSetVelocities[1], mSetVelocities[2]);
 
-		for(size_t i, i < 3; i++){
+		motorArray_.getMotorReadings(mGetVelocities, mGetPositions);
+
+		for(size_t i; i < 3; i++){
 			if (mSetVelocities[i] == 0.0f){
+				RCLCPP_INFO(node_->get_logger(), "Set velocity is 0.0f for wheel %zu", i);
 				continue;
 			} else{
 				if (mGetVelocities[i] == 0.0f){
@@ -99,13 +103,14 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 	}
 }
 
-void MotorArrayROS::velocitiesChangedEvent(const float* velocities, unsigned int size)
-{
-	if(velocities != NULL)
-	{
-		memcpy(mGetVelocities.data(), velocities, size * sizeof(float));
-	}
-}
+// void OmniDriveROS::velocitiesChangedEvent(const float* velocities, unsigned int size)
+// {	
+// 	RCLCPP_INFO(node_->get_logger(), "Velocities changed event");
+// 	if(velocities != NULL)
+// 	{
+// 		memcpy(mGetVelocities.data(), velocities, size * sizeof(float));
+// 	}
+// }
 
 void OmniDriveROS::timerCallback()
 {	
