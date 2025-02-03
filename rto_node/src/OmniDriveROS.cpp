@@ -85,6 +85,25 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 		}
 
 		setVelocity(linear_x, linear_y, angular);
+		project(&mSetVelocities[0], &mSetVelocities[1], &mSetVelocities[2], linear_x, linear_y, angular);
+
+		for(size_t i, i < 3; i++){
+			if (mSetVelocities[i] == 0.0f){
+				continue;
+			} else{
+				if (mGetVelocities[i] == 0.0f){
+					RCLCPP_ERROR(node_->get_logger(), "Sensor error detected on wheel %zu: Set velocity is > 0 but position remains unchanged!", i);
+				}
+			}
+		}
+	}
+}
+
+void MotorArrayROS::velocitiesChangedEvent(const float* velocities, unsigned int size)
+{
+	if(velocities != NULL)
+	{
+		memcpy(mGetVelocities.data(), velocities, size * sizeof(float));
 	}
 }
 

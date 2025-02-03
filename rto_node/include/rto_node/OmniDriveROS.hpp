@@ -2,6 +2,8 @@
 #define OMNIDRIVEROS_HPP_
 
 #include "rec/robotino/api2/OmniDrive.h"
+#include "rec/robotino/api2/OmniDriveModel.h"
+#include "rec/robotino/api2/MotorArray.h"
 
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
@@ -35,7 +37,11 @@ private:
 	bool bumper_hit=false;
 	rclcpp::TimerBase::SharedPtr timer_;
 	double timer_period_ = 2.0;
+	std::array<float, 3> mSetVelocities;
+	std::array<float, 3> mGetVelocities;
 
+	void project(float *m1, float *m2, float *m3, float vx, float vy, float omega) const
+	void velocitiesChangedEvent(const float* velocities, unsigned int size);
 	void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
 
 	bool handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv::SetOmniDriveEnabled::Request> request,
