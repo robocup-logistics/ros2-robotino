@@ -13,6 +13,20 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) :
 		"cmd_vel_enable", std::bind(&OmniDriveROS::handleSetOmniDriveEnabled, this, std::placeholders::_1, std::placeholders::_2));
 	bumper_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
       "bumper", 10, std::bind(&OmniDriveROS::bumperCallback, this, std::placeholders::_1));
+	motor_error_pub_ = node_->create_publisher<rto_msgs::msg::MotorErrorReadings>("motor_error_readings", 10);
+	initMsg();
+}
+
+void OmniDriveROS::initMsgs()
+{
+	motor_error_msg_.name.resize(3);
+	motor_error_msg_.error_status.resize(3, false);
+	motor_error_msg_.error_code.resize(3, 0);
+	motor_error_msg_.error_msg.resize(3, "");
+	motor_error_msg_.name[0] = "wheel0_joint";
+	motor_error_msg_.name[1] = "wheel1_joint";
+	motor_error_msg_.name[2] = "wheel2_joint";
+
 }
 
 OmniDriveROS::~OmniDriveROS()
@@ -91,21 +105,25 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 
 		setVelocity(linear_x, linear_y, angular);
 		omniDriveModel_.project(&mSetVelocities[0], &mSetVelocities[1], &mSetVelocities[2], linear_x, linear_y, angular);
-		RCLCPP_INFO(node_->get_logger(), "Set velocities: %f, %f, %f", mSetVelocities[0], mSetVelocities[1], mSetVelocities[2]);
+		//RCLCPP_INFO(node_->get_logger(), "Set velocities: %f, %f, %f", mSetVelocities[0], mSetVelocities[1], mSetVelocities[2]);
 
 		motorArray_.getMotorReadings(mGetVelocities, mGetPositions);
-		RCLCPP_INFO(node_->get_logger(), "Get velocities: %f, %f, %f", mGetVelocities[0], mGetVelocities[1], mGetVelocities[2]);
+		//RCLCPP_INFO(node_->get_logger(), "Get velocities: %f, %f, %f", mGetVelocities[0], mGetVelocities[1], mGetVelocities[2]);
 
-		for(size_t i; i < 3; i++){
-			if (mSetVelocities[i] == 0.0f){
-				RCLCPP_INFO(node_->get_logger(), "Set velocity is 0.0f for wheel %zu", i);
-				continue;
-			} else{
-				if (mGetVelocities[i] == 0.0f){
-					RCLCPP_ERROR(node_->get_logger(), "Sensor error detected on wheel %zu: Set velocity is > 0 but position remains unchanged!", i);
-				}
-			}
-		}
+		for (size_t i = 0; i < 3; i++) {
+    		if (mSetVelocities[i] == 0.0f) {
+        		continue;
+    		} else {
+        		if (mGetVelocities[i] == 0.0f) {
+					motor_error_msg_.error_status[i] = true;
+					motor_error_msg_.error_code[i] = 1;
+					motor_error_msg_.error_msg[i] = "Sensor error detected: Set velocity is > 0 but position remains unchanged!";
+          			//RCLCPP_ERROR(node_->get_logger(), "Sensor error detected on wheel %zu: Set velocity is > 0 but position remains unchanged!", i);
+        		}
+      		}
+    	}
+		motor_error_msg_.header.stamp = node_->now();
+		motor_error_pub_->publish(motor_error_msg_);
 	}
 }
 
