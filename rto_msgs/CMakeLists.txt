@@ -20,6 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/EncoderReadings.msg"
   "msg/GripperState.msg"
   "msg/MotorReadings.msg"
+  "msg/MotorErrorReadings.msg"
   "msg/PowerReadings.msg"
   "srv/ResetOdometry.srv"
   "srv/SetEncoderPosition.srv"
