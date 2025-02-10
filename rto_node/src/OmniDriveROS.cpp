@@ -1,6 +1,11 @@
 #include "rto_node/OmniDriveROS.hpp"
 
-OmniDriveROS::OmniDriveROS(rclcpp::Node* node) : node_(node)
+OmniDriveROS::OmniDriveROS(rclcpp::Node* node) : 
+	node_(node),
+	mGetVelocities{0.0f, 0.0f, 0.0f},
+    mGetPositions{0, 0, 0}, 
+    motorArray_(node)
+
 {
 	cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
 		"cmd_vel", 10, std::bind(&OmniDriveROS::cmdVelCallback, this, std::placeholders::_1));
@@ -89,6 +94,7 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 		RCLCPP_INFO(node_->get_logger(), "Set velocities: %f, %f, %f", mSetVelocities[0], mSetVelocities[1], mSetVelocities[2]);
 
 		motorArray_.getMotorReadings(mGetVelocities, mGetPositions);
+		RCLCPP_INFO(node_->get_logger(), "Get velocities: %f, %f, %f", mGetVelocities[0], mGetVelocities[1], mGetVelocities[2]);
 
 		for(size_t i; i < 3; i++){
 			if (mSetVelocities[i] == 0.0f){
@@ -102,15 +108,6 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 		}
 	}
 }
-
-// void OmniDriveROS::velocitiesChangedEvent(const float* velocities, unsigned int size)
-// {	
-// 	RCLCPP_INFO(node_->get_logger(), "Velocities changed event");
-// 	if(velocities != NULL)
-// 	{
-// 		memcpy(mGetVelocities.data(), velocities, size * sizeof(float));
-// 	}
-// }
 
 void OmniDriveROS::timerCallback()
 {	
