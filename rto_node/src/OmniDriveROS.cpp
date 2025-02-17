@@ -20,13 +20,18 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) :
 void OmniDriveROS::initMsgs()
 {
 	motor_error_msg_.name.resize(3);
-	motor_error_msg_.error_status.resize(3, false);
-	motor_error_msg_.error_code.resize(3, 0);
-	motor_error_msg_.error_msg.resize(3, "");
 	motor_error_msg_.name[0] = "wheel0_joint";
 	motor_error_msg_.name[1] = "wheel1_joint";
 	motor_error_msg_.name[2] = "wheel2_joint";
 
+	motor_error_msg_.error_status.resize(3);
+	std::fill(motor_error_msg_.error_status.begin(), motor_error_msg_.error_status.end(), false);
+
+	motor_error_msg_.error_code.resize(3, 0);
+	std::fill(motor_error_msg_.error_code.begin(), motor_error_msg_.error_code.end(), 0);
+
+	motor_error_msg_.error_msg.resize(3, "");
+	std::fill(motor_error_msg_.error_msg.begin(), motor_error_msg_.error_msg.end(), "");
 }
 
 OmniDriveROS::~OmniDriveROS()
