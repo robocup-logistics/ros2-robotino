@@ -14,7 +14,7 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) :
 	bumper_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
       "bumper", 10, std::bind(&OmniDriveROS::bumperCallback, this, std::placeholders::_1));
 	motor_error_pub_ = node_->create_publisher<rto_msgs::msg::MotorErrorReadings>("motor_error_readings", 10);
-	initMsg();
+	initMsgs();
 }
 
 void OmniDriveROS::initMsgs()
@@ -57,7 +57,8 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 		double linear_x = msg->linear.x;
 		double linear_y = msg->linear.y;
 		double angular = msg->angular.z;
-
+		initMsgs();
+		
 		if ( fabs( linear_x ) > max_linear_vel_ )
 		{
 			if( linear_x > 0.0 )

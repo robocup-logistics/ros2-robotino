@@ -49,7 +49,7 @@ private:
 	MotorArrayROS motorArray_;
 
 	void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
-
+	void initMsgs();
 	bool handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv::SetOmniDriveEnabled::Request> request,
                           std::shared_ptr<rto_msgs::srv::SetOmniDriveEnabled::Response> response);
 
