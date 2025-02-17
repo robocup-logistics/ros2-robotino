@@ -10,7 +10,7 @@ uint8 LOW_VOLTAGE = 3
 uint8 UNKNOWN_ERROR = 255
 
 # Arrays to represent each wheel's state
+string[] name # Wheel identifier
 bool[] error_status      # True if the corresponding wheel has an error
 uint8[] error_code       # Error code for each wheel
 string[] error_msg   # Error message for each wheel
-string[] name # Wheel identifier
