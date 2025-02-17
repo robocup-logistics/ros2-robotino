@@ -40,10 +40,14 @@ private:
 	bool enabled_ = true;
 	bool bumper_hit=false;
 	rclcpp::TimerBase::SharedPtr timer_;
-	double timer_period_ = 2.0;
+	double bumper_timeout_ = 2.0;
 	std::array<float, 3> mSetVelocities;
 	std::vector<float> mGetVelocities;
 	std::vector<int> mGetPositions;
+	std::vector<rclcpp::Time> motor_error_timestamps_;
+	double motor_timout_ = 10.0;
+	std::vector<bool> prevMotorErrorState_;
+	std::vector<bool> currentMotorErrorState_;
 
 	rec::robotino::api2::OmniDriveModel omniDriveModel_;
 	MotorArrayROS motorArray_;

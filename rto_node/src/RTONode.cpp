@@ -10,7 +10,8 @@ RTONode::RTONode(const std::string& name)
     this->declare_parameter("max_angular_vel", 3.0);
     this->declare_parameter("min_angular_vel", 0.07);
     this->declare_parameter("tf_prefix", "");
-    this->declare_parameter("bumper_stop_time", 2.0);
+    this->declare_parameter("bumper_timeout", 5.0);
+    this->declare_parameter("motor_timeout", 10.0);
 
     initModules();
 }
@@ -27,7 +28,8 @@ void RTONode::initModules()
     auto max_angular_vel = this->get_parameter("max_angular_vel").as_double();
     auto min_angular_vel = this->get_parameter("min_angular_vel").as_double();
     auto tf_prefix = this->get_parameter("tf_prefix").as_string();
-    auto bumper_stop_time = this->get_parameter("bumper_stop_time").as_double();
+    auto bumper_timeout = this->get_parameter("bumper_timeout").as_double();
+    auto motor_timeout = this->get_parameter("motor_timeout").as_double();
 
     com_ = std::make_shared<ComROS>();
     com_->setName("RobotinoNode");
@@ -46,7 +48,8 @@ void RTONode::initModules()
     omni_drive_ = std::make_shared<OmniDriveROS>(this);
     omni_drive_->setComId(com_->id());
     omni_drive_->setMaxMin(max_linear_vel, min_linear_vel, max_angular_vel, min_angular_vel);
-    omni_drive_->setBumperTime(bumper_stop_time);
+    omni_drive_->setBumperTime(bumper_timeout);
+    omni_drive_->setMotorTimeout(motor_timeout);
 
     imu_ = std::make_shared<GyroscopeROS>(this);
     imu_->setComId(com_->id());

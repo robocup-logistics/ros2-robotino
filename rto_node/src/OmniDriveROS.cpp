@@ -14,6 +14,14 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) :
 	bumper_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
       "bumper", 10, std::bind(&OmniDriveROS::bumperCallback, this, std::placeholders::_1));
 	motor_error_pub_ = node_->create_publisher<rto_msgs::msg::MotorErrorReadings>("motor_error_readings", 10);
+	motor_error_timestamps_.resize(3);
+	std::generate(motor_error_timestamps.begin(), motor_error_timestamps.end(), 
+              [this]() { return node_->now(); });
+	prevMotorErrorState_.resize(3);
+	std::fill(prevMotorErrorState_.begin(), prevMotorErrorState_.end(), false);
+	currentMotorErrorState_.resize(3);
+	std::fill(currentMotorErrorState_.begin(), currentMotorErrorState_.end(), false);
+
 	initMsgs();
 }
 
@@ -121,11 +129,21 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
         		continue;
     		} else {
         		if (mGetVelocities[i] == 0.0f) {
+					currentMotorErrorState_[i] = true;
 					motor_error_msg_.error_status[i] = true;
 					motor_error_msg_.error_code[i] = 1;
 					motor_error_msg_.error_msg[i] = "Sensor error detected: Set velocity is > 0 but position remains unchanged!";
-          			//RCLCPP_ERROR(node_->get_logger(), "Sensor error detected on wheel %zu: Set velocity is > 0 but position remains unchanged!", i);
-        		}
+					if (!prevMotorErrorState_[i] && currentMotorErrorState_[i]) {
+						motor_error_timestamps_[i] = node_->now();
+						prevMotorErrorState_[i] = currentMotorErrorState_[i];
+						currentMotorErrorState_[i] = false;
+					}else if (prevMotorErrorState_[i] && currentMotorErrorState_[i]){
+						if ((node_->now() - motor_error_timestamps_[i]).seconds() > motor_timout_){
+							enabled_ = false;
+							RCLCPP_ERROR(node_->get_logger(), "Motor error detected: Set velocity is > 0 but position remains unchanged for more than %f seconds!", motor_timout_);
+						}
+        			}
+				}
       		}
     	}
 		motor_error_msg_.header.stamp = node_->now();
@@ -165,12 +183,17 @@ bool OmniDriveROS::handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv
     return true;
 }
 
-void OmniDriveROS::setBumperTime(double period_sec)
+void OmniDriveROS::setBumperTime(double timeout_sec)
 {
-	timer_period_ = period_sec;
+	bumper_timeout_ = timeout_sec;
 
 	timer_ = node_->create_wall_timer(
         std::chrono::duration<double>(timer_period_), 
         std::bind(&OmniDriveROS::timerCallback, this));
     timer_->cancel(); // Start with the timer canceled
+}
+
+void OmniDriveROS::setMotorTimeout(double timeout_sec)
+{
+	motor_timout_ = timeout_sec;
 }
