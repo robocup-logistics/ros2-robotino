@@ -20,7 +20,8 @@ public:
 	void setMaxMin(double max_linear_vel, double min_linear_vel,
 		double max_angular_vel, double min_angular_vel);
 
-	void setBumperTime(double period_sec);
+	void setBumperTime(double timeout_sec);
+	void setMotorTimeout(double timeout_sec);
 
 private:
 	rclcpp::Node* node_;
@@ -40,14 +41,14 @@ private:
 	bool enabled_ = true;
 	bool bumper_hit=false;
 	rclcpp::TimerBase::SharedPtr timer_;
-	double bumper_timeout_ = 2.0;
+	double bumper_timeout_;
 	std::array<float, 3> mSetVelocities;
 	std::vector<float> mGetVelocities;
 	std::vector<int> mGetPositions;
 	std::vector<rclcpp::Time> motor_error_timestamps_;
-	double motor_timout_ = 10.0;
-	std::vector<bool> prevMotorErrorState_;
-	std::vector<bool> currentMotorErrorState_;
+	double motor_timout_;
+	std::vector<bool> motorErrorState_;
+
 
 	rec::robotino::api2::OmniDriveModel omniDriveModel_;
 	MotorArrayROS motorArray_;

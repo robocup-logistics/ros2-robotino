@@ -15,12 +15,10 @@ OmniDriveROS::OmniDriveROS(rclcpp::Node* node) :
       "bumper", 10, std::bind(&OmniDriveROS::bumperCallback, this, std::placeholders::_1));
 	motor_error_pub_ = node_->create_publisher<rto_msgs::msg::MotorErrorReadings>("motor_error_readings", 10);
 	motor_error_timestamps_.resize(3);
-	std::generate(motor_error_timestamps.begin(), motor_error_timestamps.end(), 
+	std::generate(motor_error_timestamps_.begin(), motor_error_timestamps_.end(), 
               [this]() { return node_->now(); });
-	prevMotorErrorState_.resize(3);
-	std::fill(prevMotorErrorState_.begin(), prevMotorErrorState_.end(), false);
-	currentMotorErrorState_.resize(3);
-	std::fill(currentMotorErrorState_.begin(), currentMotorErrorState_.end(), false);
+	motorErrorState_.resize(3);
+	std::fill(motorErrorState_.begin(), motorErrorState_.end(), false);
 
 	initMsgs();
 }
@@ -119,33 +117,41 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 
 		setVelocity(linear_x, linear_y, angular);
 		omniDriveModel_.project(&mSetVelocities[0], &mSetVelocities[1], &mSetVelocities[2], linear_x, linear_y, angular);
-		//RCLCPP_INFO(node_->get_logger(), "Set velocities: %f, %f, %f", mSetVelocities[0], mSetVelocities[1], mSetVelocities[2]);
+		RCLCPP_INFO(node_->get_logger(), "Set velocities: %f, %f, %f", mSetVelocities[0], mSetVelocities[1], mSetVelocities[2]);
 
 		motorArray_.getMotorReadings(mGetVelocities, mGetPositions);
-		//RCLCPP_INFO(node_->get_logger(), "Get velocities: %f, %f, %f", mGetVelocities[0], mGetVelocities[1], mGetVelocities[2]);
+		RCLCPP_INFO(node_->get_logger(), "Get velocities: %f, %f, %f", mGetVelocities[0], mGetVelocities[1], mGetVelocities[2]);
 
-		for (size_t i = 0; i < 3; i++) {
-    		if (mSetVelocities[i] == 0.0f) {
-        		continue;
-    		} else {
-        		if (mGetVelocities[i] == 0.0f) {
-					currentMotorErrorState_[i] = true;
-					motor_error_msg_.error_status[i] = true;
-					motor_error_msg_.error_code[i] = 1;
-					motor_error_msg_.error_msg[i] = "Sensor error detected: Set velocity is > 0 but position remains unchanged!";
-					if (!prevMotorErrorState_[i] && currentMotorErrorState_[i]) {
-						motor_error_timestamps_[i] = node_->now();
-						prevMotorErrorState_[i] = currentMotorErrorState_[i];
-						currentMotorErrorState_[i] = false;
-					}else if (prevMotorErrorState_[i] && currentMotorErrorState_[i]){
-						if ((node_->now() - motor_error_timestamps_[i]).seconds() > motor_timout_){
+	    rclcpp::Time current_time = node_->now();
+	    for (size_t i = 0; i < 3; i++) {
+	        if (mSetVelocities[i] == 0.0f) {
+	          motorErrorState_[i] = false;
+	          motor_error_timestamps_[i] = current_time;
+	          continue;
+	        }else{
+				if (mGetVelocities[i] == 0.0f) {
+					if (!motorErrorState_[i]) {
+						RCLCPP_INFO(node_->get_logger(), "Trigger receivedd, for motor error");
+						motor_error_timestamps_[i] = current_time;
+						motorErrorState_[i] = true;
+					}else{
+						double elapsed_time = (current_time - motor_error_timestamps_[i]).seconds();
+						motor_error_msg_.error_status[i] = true;
+						motor_error_msg_.error_code[i] = 1;
+						motor_error_msg_.error_msg[i] = "[Error]: Set velocity is > 0 but position remains unchanged!";
+						if(elapsed_time > motor_timout_){
 							enabled_ = false;
-							RCLCPP_ERROR(node_->get_logger(), "Motor error detected: Set velocity is > 0 but position remains unchanged for more than %f seconds!", motor_timout_);
+							RCLCPP_ERROR(node_->get_logger(), "Sensor_Error for Motor %zu: set velocity > 0 but measured velocity remains 0 for more than %f seconds!", i, motor_timout_);
+							motor_error_msg_.error_status[i] = true;
+							motor_error_msg_.error_code[i] = 1;
+							motor_error_msg_.error_msg[i] = "[ERROR]: Motor " + std::to_string(i) + " disabled due to timeout!";
 						}
-        			}
+					}
+				}else{
+					motor_error_timestamps_[i] = current_time;
 				}
-      		}
-    	}
+	        }
+	    }
 		motor_error_msg_.header.stamp = node_->now();
 		motor_error_pub_->publish(motor_error_msg_);
 	}
@@ -178,6 +184,14 @@ bool OmniDriveROS::handleSetOmniDriveEnabled(const std::shared_ptr<rto_msgs::srv
                                     std::shared_ptr<rto_msgs::srv::SetOmniDriveEnabled::Response> response)
 {
     enabled_ = request->enable;
+	
+	motorErrorState_.resize(3);
+	std::fill(motorErrorState_.begin(), motorErrorState_.end(), false);
+	rclcpp::Time current_time = node_->now();
+	for (size_t i = 0; i < 3; i++) {
+		motor_error_timestamps_[i] = current_time;
+	}
+	
     response->success = true;
     RCLCPP_INFO(node_->get_logger(), "OmniDrive is now %s", enabled_ ? "enabled" : "disabled");
     return true;
@@ -188,7 +202,7 @@ void OmniDriveROS::setBumperTime(double timeout_sec)
 	bumper_timeout_ = timeout_sec;
 
 	timer_ = node_->create_wall_timer(
-        std::chrono::duration<double>(timer_period_), 
+        std::chrono::duration<double>(bumper_timeout_), 
         std::bind(&OmniDriveROS::timerCallback, this));
     timer_->cancel(); // Start with the timer canceled
 }
