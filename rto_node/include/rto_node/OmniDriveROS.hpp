@@ -42,6 +42,7 @@ private:
 	bool bumperhit_current_state = false;
 	bool enabled_ = true;
 	bool bumper_hit=false;
+	bool enbale_motot_timeout_=false;
 	rclcpp::TimerBase::SharedPtr timer_;
 	double bumper_timeout_;
 	std::array<float, 3> mSetVelocities;
