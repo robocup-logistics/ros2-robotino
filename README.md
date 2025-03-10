@@ -46,8 +46,8 @@ Install the below debian packages first(part of the repository):
 After installing ROS2 and creating the workspace, clone this repository in your workspace:
 
     cd ~/robotino_driver_ws/src
-    git clone https://github.com/carologistics/robotino-driver.git
-
+    git clone https://github.com/robocup-logistics/ros2-robotino.git
+ 
 Install the binary dependencies by running the following command in the root of your workspace:
 
     cd ~/robotino_driver_ws
