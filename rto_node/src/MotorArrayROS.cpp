@@ -46,7 +46,7 @@ void MotorArrayROS::positionsChangedEvent(const int* positions, unsigned int siz
 {
 	// Build the MotorReadings msg
 	motor_msg_.positions.resize(size, 0.0);
-
+	
 	if(positions != NULL)
 	{
 		memcpy(motor_msg_.positions.data(), positions, size * sizeof(int));
@@ -71,7 +71,4 @@ void MotorArrayROS::currentsChangedEvent(const float* currents, unsigned int siz
 
 	joint_state_msg_.header.stamp = node_->now();
 	joint_states_pub_->publish(joint_state_msg_);
-
-	
-	
 }

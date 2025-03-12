@@ -46,6 +46,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_joynode = LaunchConfiguration('launch_joynode')
     launch_rsp_freq = LaunchConfiguration('launch_rsp_freq')
     launch_odom_tf = LaunchConfiguration('launch_odom_tf')
+    bumper_timeout = LaunchConfiguration('bumper_timeout')
+    motor_timeout = LaunchConfiguration('motor_timeout')
     # Process the Xacro file
     xacro_description = xacro.process_file(robot_description.perform(context), mappings={}, in_order=True, base_path=os.path.dirname(robot_description.perform(context))).toxml()
 
@@ -69,6 +71,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             parameters=[{
                 'hostname' : hostname,
                 'tf_prefix' : tf_prefix,
+                'bumper_timeout' : bumper_timeout,
+                'motor_timeout' : motor_timeout
             }],
         ),
 
@@ -79,7 +83,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
             namespace=namespace,
             parameters=[{
                 'hostname' : hostname,
-                'tf_prefix' : launch_configuration['namespace']+'/',
+                'tf_prefix' : launch_configuration['namespace']+'/', 
                 'publish_odom_tf': launch_odom_tf
             }]
         ),
@@ -165,6 +169,16 @@ def generate_launch_description():
         'launch_teleopnode',
         default_value='true',
         description= 'Weather to start teleop node not based on launch environment')
+    
+    declare_bumper_timeout_argument = DeclareLaunchArgument(
+        'bumper_timeout',
+        default_value='2.0',
+        description= 'Time to stop robot when bumper is hit')
+    
+    declare_motor_timeout_argument = DeclareLaunchArgument(
+        'motor_timeout',
+        default_value='10.0',
+        description= 'Time to stop robot when motor is not responding')
 
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
         'launch_odom_tf',
@@ -184,7 +198,9 @@ def generate_launch_description():
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_rsp_freq_argument)
+    ld.add_action(declare_bumper_timeout_argument)
     ld.add_action(declare_launch_odom_tf_argument)
+    ld.add_action(declare_motor_timeout_argument)
 
 
     # Add the actions to launch webots, controllers and rviz

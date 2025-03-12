@@ -42,6 +42,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
     launch_odom_tf = LaunchConfiguration('launch_odom_tf')
+    motor_timeout = LaunchConfiguration('motor_timeout')
+    bumper_timeout = LaunchConfiguration('bumper_timeout')
 
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
@@ -66,6 +68,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
                 'launch_teleopnode': launch_teleopnode,
                 'launch_joynode': launch_joynode,
                 'launch_odom_tf': launch_odom_tf,
+                'motor_timeout': motor_timeout,
+                'bumper_timeout': bumper_timeout,
             }.items()
         ),
 
@@ -109,6 +113,16 @@ def generate_launch_description():
         'launch_odom_tf',
         default_value='false',
         description= 'Wheather to broadcast transform based on launch environment')
+    
+    declare_motor_timeout_argument = DeclareLaunchArgument(
+        'motor_timeout',
+        default_value='10.0',
+        description= 'Time to stop robot when motor is not responding')
+    
+    declare_bumper_timeout_argument = DeclareLaunchArgument(
+        'bumper_timeout',
+        default_value='5.0',
+        description= 'Time to stop robot when bumper is hit')
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -118,6 +132,8 @@ def generate_launch_description():
     ld.add_action(declare_launch_joynode_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_odom_tf_argument)
+    ld.add_action(declare_motor_timeout_argument)
+    ld.add_action(declare_bumper_timeout_argument)
 
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))
