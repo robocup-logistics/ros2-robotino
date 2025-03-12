@@ -42,14 +42,16 @@ private:
 	bool bumperhit_current_state = false;
 	bool enabled_ = true;
 	bool bumper_hit=false;
-	bool enbale_motot_timeout_=false;
+	bool motortimeout_prev_state = false;
+    bool motortimeout_current_state = false;
 	rclcpp::TimerBase::SharedPtr timer_;
+	rclcpp::TimerBase::SharedPtr motor_timer_;
 	double bumper_timeout_;
 	std::array<float, 3> mSetVelocities;
 	std::vector<float> mGetVelocities;
 	std::vector<int> mGetPositions;
 	std::vector<rclcpp::Time> motor_error_timestamps_;
-	double motor_timout_;
+	double motor_timeout_;
 	std::vector<bool> motorErrorState_;
 
 
@@ -66,6 +68,7 @@ private:
 
 	void bumperCallback(const std_msgs::msg::Bool::SharedPtr msg);
 	void timerCallback();
+	void motorTimerCallback();
 };
 
 #endif /* OMNIDRIVEROS_HPP_ */
