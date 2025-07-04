@@ -44,6 +44,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_odom_tf = LaunchConfiguration('launch_odom_tf')
     motor_timeout = LaunchConfiguration('motor_timeout')
     bumper_timeout = LaunchConfiguration('bumper_timeout')
+    joy_deadzone = LaunchConfiguration('joy_deadzone')
 
     launch_configuration = {}
     for argname, argval in context.launch_configurations.items():
@@ -70,6 +71,7 @@ def launch_nodes_withconfig(context, *args, **kwargs):
                 'launch_odom_tf': launch_odom_tf,
                 'motor_timeout': motor_timeout,
                 'bumper_timeout': bumper_timeout,
+                'joy_deadzone': joy_deadzone,
             }.items()
         ),
 
@@ -102,17 +104,22 @@ def generate_launch_description():
     declare_launch_joynode_argument = DeclareLaunchArgument(
         'launch_joynode',
         default_value='true',
-        description= 'Wheather to start joynode based on launch environment')
+        description= 'Whether to start joynode')
+
+    declare_joy_deadzone_argument = DeclareLaunchArgument(
+        'joy_deadzone',
+        default_value='0.2',
+        description= 'deadzone for joy node to avoid movement when idle due to joystick jitter')
 
     declare_launch_teleopnode_argument = DeclareLaunchArgument(
         'launch_teleopnode',
         default_value='true',
-        description= 'Wheather to start teleop node not based on launch environment')
+        description= 'Whether to start teleop node')
 
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
         'launch_odom_tf',
         default_value='false',
-        description= 'Wheather to broadcast transform based on launch environment')
+        description= 'Wheather to broadcast transform')
     
     declare_motor_timeout_argument = DeclareLaunchArgument(
         'motor_timeout',
@@ -130,6 +137,7 @@ def generate_launch_description():
     # Declare the launch options
     ld.add_action(declare_namespace_argument)
     ld.add_action(declare_launch_joynode_argument)
+    ld.add_action(declare_joy_deadzone_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_odom_tf_argument)
     ld.add_action(declare_motor_timeout_argument)
