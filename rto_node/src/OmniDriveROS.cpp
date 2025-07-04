@@ -232,25 +232,19 @@ void OmniDriveROS::setBumperTime(double timeout_sec)
 	}else if (timeout_sec == 0.0){
 		bumper_timeout_ = 0.0;	
 		RCLCPP_INFO(node_->get_logger(), "Bumper Stop disabled");
+
 	}else if (timeout_sec < 0.0){
-		RCLCPP_WARN(node_->get_logger(), "Bumper timeout cannot be negative, Setting to default, 5.0 sec.");
-		bumper_timeout_ = 5.0;
-		timer_ = node_->create_wall_timer(
-			std::chrono::duration<double>(bumper_timeout_), 
-			std::bind(&OmniDriveROS::timerCallback, this));
-		timer_->cancel();
+		bumper_timeout_ = 0.0;
+		RCLCPP_WARN(node_->get_logger(), "Invalid input, Bumper stop disabled.");
+
 	}
 }
 
 void OmniDriveROS::setMotorTimeout(double timeout_sec)
 {	
 	if (timeout_sec < 0.0){
-		RCLCPP_WARN(node_->get_logger(), "Motor timeout cannot be negative, Setting to default, 10.0 sec.");
-		motor_timeout_ = 10.0;
-	    motor_timer_ = node_->create_wall_timer(
-	      std::chrono::duration<double>(2.0), 
-	      std::bind(&OmniDriveROS::motorTimerCallback, this));
-	    motor_timer_->cancel(); 
+		motor_timeout_ = 0.0;
+		RCLCPP_WARN(node_->get_logger(), "Invalid input, Motor timeout disabled.");
 
 	}else if (timeout_sec == 0.0){
 		motor_timeout_ = 0.0;

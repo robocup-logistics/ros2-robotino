@@ -116,12 +116,12 @@ def generate_launch_description():
     
     declare_motor_timeout_argument = DeclareLaunchArgument(
         'motor_timeout',
-        default_value='10.0',
+        default_value='0.0',
         description= 'Time to stop robot when motor is not responding')
     
     declare_bumper_timeout_argument = DeclareLaunchArgument(
         'bumper_timeout',
-        default_value='5.0',
+        default_value='2.0',
         description= 'Time to stop robot when bumper is hit')
 
     # Create the launch description and populate

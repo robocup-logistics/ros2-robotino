@@ -177,7 +177,7 @@ def generate_launch_description():
     
     declare_motor_timeout_argument = DeclareLaunchArgument(
         'motor_timeout',
-        default_value='10.0',
+        default_value='0.0',
         description= 'Time to stop robot when motor is not responding')
 
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
