@@ -20,11 +20,13 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/EncoderReadings.msg"
   "msg/GripperState.msg"
   "msg/MotorReadings.msg"
+  "msg/MotorErrorReadings.msg"
   "msg/PowerReadings.msg"
   "srv/ResetOdometry.srv"
   "srv/SetEncoderPosition.srv"
   "srv/SetGripperState.srv"
   "srv/SetOmniDriveEnabled.srv"
+  "srv/SetVelLimits.srv"
   DEPENDENCIES std_msgs #Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
 

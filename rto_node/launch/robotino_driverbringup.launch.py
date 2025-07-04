@@ -42,6 +42,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
     launch_teleopnode = LaunchConfiguration('launch_teleopnode')
     launch_joynode = LaunchConfiguration('launch_joynode')
     launch_odom_tf = LaunchConfiguration('launch_odom_tf')
+    motor_timeout = LaunchConfiguration('motor_timeout')
+    bumper_timeout = LaunchConfiguration('bumper_timeout')
     joy_deadzone = LaunchConfiguration('joy_deadzone')
 
     launch_configuration = {}
@@ -67,6 +69,8 @@ def launch_nodes_withconfig(context, *args, **kwargs):
                 'launch_teleopnode': launch_teleopnode,
                 'launch_joynode': launch_joynode,
                 'launch_odom_tf': launch_odom_tf,
+                'motor_timeout': motor_timeout,
+                'bumper_timeout': bumper_timeout,
                 'joy_deadzone': joy_deadzone,
             }.items()
         ),
@@ -115,7 +119,17 @@ def generate_launch_description():
     declare_launch_odom_tf_argument = DeclareLaunchArgument(
         'launch_odom_tf',
         default_value='false',
-        description= 'Whether to broadcast transform')
+        description= 'Wheather to broadcast transform')
+    
+    declare_motor_timeout_argument = DeclareLaunchArgument(
+        'motor_timeout',
+        default_value='0.0',
+        description= 'Time to stop robot when motor is not responding')
+    
+    declare_bumper_timeout_argument = DeclareLaunchArgument(
+        'bumper_timeout',
+        default_value='2.0',
+        description= 'Time to stop robot when bumper is hit')
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -126,6 +140,8 @@ def generate_launch_description():
     ld.add_action(declare_joy_deadzone_argument)
     ld.add_action(declare_launch_teleopnode_argument)
     ld.add_action(declare_launch_odom_tf_argument)
+    ld.add_action(declare_motor_timeout_argument)
+    ld.add_action(declare_bumper_timeout_argument)
 
     # Add the actions to launch webots, controllers and rviz
     ld.add_action(OpaqueFunction(function=launch_nodes_withconfig))
