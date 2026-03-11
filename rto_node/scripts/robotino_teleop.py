@@ -18,18 +18,18 @@ class Robotino3Teleop(Node):
         super().__init__('robotino_joyteleop', namespace='')
 
         # create subscription to joy topic
-        self.subscription = self.create_subscription(Joy, 'joy', self.TeleopCallback, 10)
+        self.subscription = self.create_subscription(Joy, 'joy', self.TeleopCallback, 50)
 
         # create publisher to cmd_vel topic
         self.publisher= self.create_publisher(Twist, 'cmd_vel', 10)
 
         self.saved_img = False
         self.release_img = True
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect(("192.168.0.100", 6465))
+        # self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.client_socket.connect(("192.168.0.100", 6465))
 
         self.move_client = ActionClient(self, Move,'gigatino/move')
-        self.move_pub = self.create_publisher(Vector3, 'gigatino/move_absolute', 10)
+        self.move_pub = self.create_publisher(Vector3, 'gigatino/move_absolute', 50)
 
         self.feedback_sub = self.create_subscription(
             Feedback,
@@ -41,11 +41,11 @@ class Robotino3Teleop(Node):
         self.current_x = 0.0
         self.current_yaw = 0.0
         self.current_z = 0.0
-        self.prev_buttons = [0]*12
+        self.prev_buttons = [0]*15
 
-        self.step_x = 5.0     # mm
-        self.step_z = 5.0     # mm
-        self.step_yaw = 2.0   # deg
+        self.step_x = 10.0     # mm
+        self.step_z = 10.0     # mm
+        self.step_yaw = 10.0   # deg
 
         # Initialize parameters
         self.declare_parameter('forward_axis_scalling', 1.0)
@@ -93,37 +93,40 @@ class Robotino3Teleop(Node):
           self.saved_img = True
         else:
           self.saved_img = False
-        # Button press detection
-        if data.buttons[2] == 1:   # X button
-            if data.button[13] == 1:     # D-pad up
-                self.send_absolute_move(self.current_x + self.step_x,
-                                        self.current_yaw,
-                                        self.current_z)
 
-            elif data.buttons[14] == 1:  # D-pad down
-                self.send_absolute_move(self.current_x - self.step_x,
-                                        self.current_yaw,
-                                        self.current_z)
-        if data.buttons[1] == 1:   # X button
-            if data.button[13] == 1:     # D-pad up
-                self.send_absolute_move(self.current_x,
-                                        self.current_yaw,
-                                        self.current_z + self.step_z)
+        x_delta = 0.0
+        z_delta = 0.0
+        yaw_delta = 0.0
 
-            elif data.buttons[14] == 1:  # D-pad down
-                self.send_absolute_move(self.current_x,
-                                        self.current_yaw,
-                                        self.current_z - self.step_z)
-        if data.buttons[3] == 1:   # X button
-            if data.button[12] == 1:     # D-pad right
-                self.send_absolute_move(self.current_x,
-                                        self.current_yaw + self.step_yaw,
-                                        self.current_z)
+        # X-axis: buttons[2] (X) + D-pad up/down
+        if data.buttons[2]:  # X
+            if data.buttons[13]:  # D-pad up
+                x_delta = self.step_x
+            elif data.buttons[14]:  # D-pad down
+                x_delta = -self.step_x
 
-            elif data.buttons[11] == 1:  # D-pad down
-                self.send_absolute_move(self.current_x,
-                                        self.current_yaw - self.step_yaw,
-                                        self.current_z)
+        # Z-axis: buttons[1] (A) + D-pad up/down
+        if data.buttons[1]:  # A
+            if data.buttons[13]:  # D-pad up
+                z_delta = self.step_z
+            elif data.buttons[14]:  # D-pad down
+                z_delta = -self.step_z
+
+        # Yaw: buttons[3] (B) + D-pad left/right
+        if data.buttons[3]:  # B
+            if data.buttons[11]:  # D-pad left
+                yaw_delta = -self.step_yaw
+            elif data.buttons[12]:  # D-pad right
+                yaw_delta = self.step_yaw
+
+        # send absolute move with updated axes
+        if x_delta or z_delta or yaw_delta:
+            self.send_absolute_move(
+                self.current_x + x_delta,
+                self.current_yaw + yaw_delta,
+                self.current_z + z_delta
+            )
+
         # if data.buttons[1] == 1 and self.prev_buttons[1] == 0:
         #     self.send_move_goal(0.05, 0.05, 0.1)
         #     self.prev_buttons = data.buttons
